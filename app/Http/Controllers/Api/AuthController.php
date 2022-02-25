@@ -25,16 +25,19 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'img' => $request->img,
+            'img' => $request->img->store('public','public'),
             'phone_number' => $request->phone_number,
             'address' => $request->address,
             'Longitude' => $request->Longitude,
             'Latitude' => $request->Latitude,
             'password' => Hash::make($request->password),
+
         ]);
+        dd($user->image_link);
 
       //  event(new Registered($user));
 

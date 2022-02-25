@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use http\Url;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -57,4 +58,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->notify(new ResetPasswordNotification($url));
     }
 
+    public function getImageLinkAttribute(){
+        return $this->img ?  url('/storage/'.$this->img) : url('/man3.png');
+    }
 }

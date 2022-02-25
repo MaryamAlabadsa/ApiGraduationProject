@@ -40,6 +40,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('addRequest', [\App\Http\Controllers\RequestsController::class, 'addRequest']);
     Route::post('getAllRequests', [\App\Http\Controllers\RequestsController::class, 'getAllRequests']);
     Route::post('deleteRequest', [\App\Http\Controllers\RequestsController::class, 'deleteRequest']);
+    //Category
+    Route::post('addCategory', [\App\Http\Controllers\CategoryController::class, 'addCategory']);
+    Route::post('editCategory', [\App\Http\Controllers\CategoryController::class, 'editCategory']);
+    Route::post('getAllCategories', [\App\Http\Controllers\CategoryController::class, 'getAllCategories']);
 
 
 });

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="54.210.44.4" id="7152c54d-5c03-44c2-82e0-dcbc5f2f72c6" keyPath="C:\Users\Eng.Nabil\Downloads\maryam.pem" port="22" nameFormat="DESCRIPTIVE" username="ubuntu" />
+    </configs>
+  </component>
+</project>

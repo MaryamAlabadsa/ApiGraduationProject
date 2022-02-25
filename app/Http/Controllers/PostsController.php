@@ -2,25 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddPostRequest;
+use App\Http\Requests\PostRequest;
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\Console\Input\Input;
 
 class PostsController extends Controller
 {
-    public function addPost(Request $request)
+    public function addPost(AddPostRequest $request)
     {
-        $request->validate([
-//            'name' => 'required|string|max:255',
-//            'email' => 'required|string|email|max:255|unique:users',
-//            //  'img' => 'required|text',
-//            'phone_number' => 'required|numeric|min:10',
-//            'address' => 'required|string|max:255',
-//            'Longitude' => 'string|max:255',
-//            'Latitude' => 'string|max:255',
-//            'password' => ['required', 'confirmed', Password::defaults()],
-        ]);
 
         $post = Post::create([
             'title' => $request->title,
@@ -28,7 +22,7 @@ class PostsController extends Controller
             'is_donation' => $request->is_donation,
             'category_id' => $request->category_id,
             // 'number_of_requests' => $request->number_of_requests,
-            'first_user' => Auth::user()->getAuthIdentifier(),
+            'first_user' => Auth::id(),
 //            'donor_id' => $request->donor_id,
 //            'beneficiary_id' => $request->beneficiary_id,
         ]);
@@ -42,10 +36,10 @@ class PostsController extends Controller
 
     }
 
-
     public function getAllPosts()
     {
-        $post = Post::all();
+
+        $post = Post::with('category')->get();
         return response()->json(
             [
                 'message' => 'done',
@@ -56,7 +50,7 @@ class PostsController extends Controller
         );
     }
 
-    public function getPostById(Request $request)
+    public function getPostById(PostRequest $request)
     {
         $post = Post::where('id', $request->id)->first();
         return response()->json(
@@ -69,7 +63,7 @@ class PostsController extends Controller
         );
     }
 
-    public function getPostByCategoray(Request $request)
+    public function getPostByCategoray(PostRequest $request)
     {
         $post = Post::where('category_id', $request->category_id)->get();
         return response()->json(
@@ -82,7 +76,7 @@ class PostsController extends Controller
         );
     }
 
-    function deletePost(Request $request)
+    function deletePost(PostRequest $request)
     {
         $post = Post::where('id', $request->id)->first();
         $post->delete();
@@ -137,6 +131,7 @@ class PostsController extends Controller
             ]
         );
     }
+
 
     public
     function postsIsAvilable(Request $request)
