@@ -17,7 +17,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-          //  'img' => 'required|text',
+            //  'img' => 'required|text',
             'phone_number' => 'required|numeric|min:10',
             'address' => 'required|string|max:255',
             'Longitude' => 'string|max:255',
@@ -29,7 +29,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'img' => $request->img->store('public','public'),
+            //'img' => $request->img->store('public', 'public'),
             'phone_number' => $request->phone_number,
             'address' => $request->address,
             'Longitude' => $request->Longitude,
@@ -37,7 +37,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
 
         ]);
-        dd($user->image_link);
+      //  dd($user->image_link);
 
       //  event(new Registered($user));
 
@@ -45,8 +45,8 @@ class AuthController extends Controller
 
         return response()->json(
             [
-                'message'=>'User Registered',
-                'data'=> ['token' => $token->plainTextToken, 'user' => $user]
+                'message' => 'User Registered',
+                'data' => ['token' => $token->plainTextToken, 'user' => $user]
             ]
         );
 
@@ -60,14 +60,14 @@ class AuthController extends Controller
 
         $token = $request->user()->createToken('authtoken');
 
-       return response()->json(
-           [
-               'message'=>'Logged in baby',
-               'data'=> [
-                   'user'=> $request->user(),
-                   'token'=> $token->plainTextToken
-               ]
-           ]
+        return response()->json(
+            [
+                'message' => 'Logged in baby',
+                'data' => [
+                    'user' => $request->user(),
+                    'token' => $token->plainTextToken
+                ]
+            ]
         );
     }
 

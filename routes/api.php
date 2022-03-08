@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum','verified')->get('/user', function (Request $re
 Route::middleware(['auth:sanctum'])->group(function () {
     //post
     Route::post('getPostById', [\App\Http\Controllers\PostsController::class, 'getPostById']);
-    Route::post('getAllPosts', [\App\Http\Controllers\PostsController::class, 'getAllPosts']);
+    Route::get('getAllPosts', [\App\Http\Controllers\PostsController::class, 'getAllPosts']);
     Route::post('addPost', [\App\Http\Controllers\PostsController::class, 'addPost']);
     Route::post('deletePost', [\App\Http\Controllers\PostsController::class, 'deletePost']);
     Route::post('getUserProfile', [\App\Http\Controllers\PostsController::class, 'getUserProfile']);
@@ -36,6 +36,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('getPostByCategoray', [\App\Http\Controllers\PostsController::class, 'getPostByCategoray']);
     //log out
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('changePassword', [NewPasswordController::class, 'changePassword']);
     //request
     Route::post('addRequest', [\App\Http\Controllers\RequestsController::class, 'addRequest']);
     Route::post('getAllRequests', [\App\Http\Controllers\RequestsController::class, 'getAllRequests']);
@@ -58,7 +59,7 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('email/verification-notification', [EmailVerificationController::class, 'sendVerificationEmail'])->middleware('auth:sanctum');
 Route::get('verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify')->middleware('auth:sanctum');
 
-Route::post('forgot-password', [NewPasswordController::class, 'forgotPassword']);
+Route::post('forgotPassword', [NewPasswordController::class, 'forgotPassword']);
 Route::post('reset-password', [NewPasswordController::class, 'reset']);
 
 //

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -14,6 +15,7 @@ class NewPasswordController extends Controller
 {
     public function forgotPassword(Request $request)
     {
+
         $request->validate([
             'email' => 'required|email',
         ]);
@@ -21,7 +23,7 @@ class NewPasswordController extends Controller
         $status = Password::sendResetLink(
             $request->only('email')
         );
-
+       // dd($status);
         if ($status == Password::RESET_LINK_SENT) {
             return [
                 'status' => __($status)
@@ -57,15 +59,43 @@ class NewPasswordController extends Controller
 
         if ($status == Password::PASSWORD_RESET) {
             return response([
-                'message'=> 'Password reset successfully'
+                'message' => 'Password reset successfully'
             ]);
         }
 
         return response([
-            'message'=> __($status)
+            'message' => __($status)
         ], 500);
 
     }
 
+    public function changePassword(Request $request)
+    {
 
+        $validator = Validator::make($request->all(), [
+            'old_password' => 'required',
+            'password' => 'required|min:8|max:100',
+            'password_confirmation' => 'required|same:password'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'User Registered',
+                'data' => [$validator->errors()]
+            ], 422);
+        }
+        $user = $request->user();
+        if (Hash::check($request->old_password, $user->password)) {
+            $user->update([
+                'password'=>Hash::make($request->password)
+            ]);
+            return response()->json([
+                'message' => 'password successfully updated '
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'old password do not matched'
+            ], 400);
+        }
+
+    }
 }

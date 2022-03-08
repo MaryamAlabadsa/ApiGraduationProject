@@ -20,12 +20,16 @@ class PostsController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'is_donation' => $request->is_donation,
-            'category_id' => $request->category_id,
-            // 'number_of_requests' => $request->number_of_requests,
             'first_user' => Auth::id(),
-//            'donor_id' => $request->donor_id,
-//            'beneficiary_id' => $request->beneficiary_id,
         ]);
+        foreach ($r as $request){
+            $image_name =$r->image->store('public','public');
+            $post->media()->create([
+                'post_id'=>$post->id,
+                'name'=>$image_name,
+            ]);
+        }
+
 
         return response()->json(
             [
@@ -39,7 +43,7 @@ class PostsController extends Controller
     public function getAllPosts()
     {
 
-        $post = Post::with('category')->get();
+        $post = Post::all();
         return response()->json(
             [
                 'message' => 'done',
