@@ -1,4 +1,4 @@
-@extends('control_panal.master')
+@extends('control_panel.master')
 @section('content')
 <div class="row">
     <div class="col-md-12">
@@ -26,24 +26,18 @@
                             <img class="img-rounded" src="img/jpeg/1.jpg" alt="" height="50">
                         </td>
                         <td>
-                            {{$post-> excerpt}}
+                            {{$post-> post_first_user}}
+                        </td>
+                        <td>
+                            {{$post-> title}}
                         </td>
                         <td class="hidden-xs">
-                            <p class="no-margin">
-                                <small>
-                                    <span class="fw-semi-bold">Type:</span>
-                                    <span class="text-muted">&nbsp; JPEG</span>
-                                </small>
-                            </p>
-                            <p>
-                                <small>
-                                    <span class="fw-semi-bold">Dimensions:</span>
-                                    <span class="text-muted">&nbsp; 200x150</span>
-                                </small>
-                            </p>
+
+                            {{$post-> is_donation}}
+
                         </td>
                         <td class="hidden-xs text-muted">
-                            September 14, 2012
+                            post_category
                         </td>
                         <td class="hidden-xs text-muted">
                             45.6 KB

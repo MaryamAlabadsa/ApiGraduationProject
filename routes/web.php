@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('control_panel.master');
-});
+//Route::get('/', function () {
+//    return view('control_panel.post.post');
+//});
+Route::get('/',[\App\Http\Controllers\PostController::class,'index']);
+
 //user
 Route::get('users', function () {
     return view('control_panel.user.users');

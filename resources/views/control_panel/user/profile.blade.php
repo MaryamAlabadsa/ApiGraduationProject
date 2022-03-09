@@ -1,4 +1,4 @@
-@extends('control_panal.master')
+@extends('control_panel.master')
 @section('content')
 
     <div class="content-wrapper">
