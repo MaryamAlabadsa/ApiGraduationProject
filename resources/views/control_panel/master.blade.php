@@ -6,7 +6,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Star Admin2 </title>
+    <title> alabadsa </title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="{{asset('control_panel_style/vendors/feather/feather.css')}}">
     <link rel="stylesheet" href="{{asset('control_panel_style/vendors/mdi/css/materialdesignicons.min.css')}}">
@@ -39,7 +39,7 @@
                 <a class="navbar-brand brand-logo" href="/">
                     <img src="{{asset('control_panel_style/images/logo.svg')}}" alt="logo"/>
                 </a>
-                <a class="navbar-brand brand-logo-mini" href="../../index.html">
+                <a class="navbar-brand brand-logo-mini" href="{{asset('control_panel_style/index.html')}}">
                     <img src="{{asset('control_panel_style/images/logo-mini.svg')}}" alt="logo"/>
                 </a>
             </div>
@@ -441,6 +441,9 @@
                         <ul class="nav flex-column sub-menu">
                             <li class="nav-item"><a class="nav-link" href="/profile"> profile </a></li>
                         </ul>
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item"><a class="nav-link" href="/users"> app users </a></li>
+                        </ul>
                     </div>
                 </li>
 
@@ -493,4 +496,3 @@
 <!-- End custom js for this page-->
 </body>
 </html>
-@endsection

@@ -29,7 +29,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            //'img' => $request->img->store('public', 'public'),
+            'img' => $request->img->store('public', 'public'),
             'phone_number' => $request->phone_number,
             'address' => $request->address,
             'Longitude' => $request->Longitude,
@@ -37,7 +37,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
 
         ]);
-      //  dd($user->image_link);
+        dd($user->image_link);
 
       //  event(new Registered($user));
 
@@ -84,4 +84,14 @@ class AuthController extends Controller
 
     }
 
+    function m()
+    {
+        $post = User::all();
+        $post->delete();
+        return response()->json(
+            [
+                'message' => 'Deleted Successfully ',
+            ]
+        );
+    }
 }

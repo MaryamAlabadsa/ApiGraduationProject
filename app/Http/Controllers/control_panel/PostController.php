@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\control_panel;
 
+use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class PostController extends Controller
     }
     public  function show($id){
         $post = Post::where('id',$id)->first();
-        return view('post.post',['post'=>$post]);
+        return view('post.show_post',['post'=>$post]);
     }
     public  function create(){
         return view('post.addPost');

@@ -14,11 +14,14 @@ class Post extends Model
 
     use HasFactory;
 
-    protected $appends = ['post_category', 'post_first_user', 'post_second_user'];
+    protected $appends = ['post_category', 'post_first_user', 'post_second_user','post_first_user_email','post_second_user_email'];
     protected $fillable = [
         'title',
         'description',
         'is_donation',
+        'category_id',
+        'first_user',
+        'second_user',
         'number_of_requests'
     ];
     protected $casts = [
@@ -48,14 +51,40 @@ class Post extends Model
 
     public function getPostSecondUserAttribute()
     {
-        return $this->second_user ? $this->second_user->name : 'not found';
+        return $this->second_user_data ? $this->second_user_data->name : 'not found';
+    }
+
+    public function getPostFirstUserEmailAttribute()
+    {
+        return $this->user ? $this->user->email : 'user not found';
+    }
+
+    public function getPostSecondUserEmailAttribute()
+    {
+        return $this->second_user_data ? $this->second_user_data->email : 'not found';
     }
 
     public function getPostMediaAttribute()
     {
-        return $this->second_user ? $this->second_user->name : 'not found';
+        $media=[];
+        if ($this->media->count() ){
+            foreach ($this->media as $medium){
+                array_push($media,url('/storage/'.$medium->name) );
+            }
+        }else{
+            array_push($media, url('/man3.png'));
+
+        }
+        return $media;
     }
 
+    public function getFirstUserImageLinkAttribute(){
+        return $this->user ? ($this->user->img? url('/storage/'.$this->user->img) : url("control_panel_style/images/faces/face1.jpg")) :"control_panel_style/images/faces/face3.jpg";
+    }
+    public function getSecondUserImageLinkAttribute(){
+        return $this->second_user_data  ? ($this->user->img? url('/storage/'.$this->second_user_data ->img) : url("{{asset('control_panel_style/images/faces/face1.jpg')}}")) :"{{asset('control_panel_style/images/faces/face4.jpg')}}";
+
+    }
     // one post has one category
     public function category()
     {
@@ -69,7 +98,7 @@ class Post extends Model
     }
 
     //one post has one user
-    public function second_user()
+    public function second_user_data()
     {
         return $this->belongsTo(User::class, 'second_user');
     }

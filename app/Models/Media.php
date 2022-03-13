@@ -9,14 +9,12 @@ class Media extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'title',
-        'description',
-        'is_donation',
-        'number_of_requests'
+        'name',
     ];
     //one image belongs to one post
     public function post()
     {
         return $this->belongsTo(Post::class, 'second_user');
     }
+
 }

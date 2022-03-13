@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\AddPostRequest;
 use App\Http\Requests\PostRequest;
+use App\Http\Resources\PostResource;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
@@ -15,21 +17,22 @@ class PostsController extends Controller
 {
     public function addPost(AddPostRequest $request)
     {
-
+//        dd($request->assets);
         $post = Post::create([
             'title' => $request->title,
             'description' => $request->description,
+            'category_id' => $request->category_id,
             'is_donation' => $request->is_donation,
             'first_user' => Auth::id(),
         ]);
-        foreach ($r as $request){
-            $image_name =$r->image->store('public','public');
+
+            foreach ($request->assets as $file) {
+            $image_name = $file->store('public', 'public');
             $post->media()->create([
-                'post_id'=>$post->id,
-                'name'=>$image_name,
+                'post_id' => $post->id,
+                'name' => $image_name,
             ]);
         }
-
 
         return response()->json(
             [
@@ -42,16 +45,17 @@ class PostsController extends Controller
 
     public function getAllPosts()
     {
-
         $post = Post::all();
-        return response()->json(
-            [
-                'message' => 'done',
-                'data' => [
-                    'posts' => $post
-                ]
-            ]
-        );
+        return new PostResource($post);
+
+//        return response()->json(
+//            [
+//                'message' => 'done',
+//                'data' => [
+//                    'posts' => $post
+//                ]
+//            ]
+//        );
     }
 
     public function getPostById(PostRequest $request)

@@ -6,11 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class AddPostRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
     public function authorize()
     {
         return true;
@@ -28,7 +23,8 @@ class AddPostRequest extends FormRequest
             'description' => 'required|string',
             'is_donation' => 'required|numeric|in:0,1',
             'category_id' => 'required|numeric|exists:categories,id',
-
+            'assets' => 'required|array',
+            'assets.*' => 'required|image|mimes:jpg,png,jpeg',
         ];
     }
     public function messages()

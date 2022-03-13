@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Requests\AddPostRequest;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EmailVerificationController;
@@ -27,13 +30,12 @@ Route::middleware('auth:sanctum','verified')->get('/user', function (Request $re
 
 Route::middleware(['auth:sanctum'])->group(function () {
     //post
-    Route::post('getPostById', [\App\Http\Controllers\PostsController::class, 'getPostById']);
-    Route::get('getAllPosts', [\App\Http\Controllers\PostsController::class, 'getAllPosts']);
-    Route::post('addPost', [\App\Http\Controllers\PostsController::class, 'addPost']);
-    Route::post('deletePost', [\App\Http\Controllers\PostsController::class, 'deletePost']);
-    Route::post('getUserProfile', [\App\Http\Controllers\PostsController::class, 'getUserProfile']);
-    Route::post('editPost', [\App\Http\Controllers\PostsController::class, 'editPost']);
-    Route::post('getPostByCategoray', [\App\Http\Controllers\PostsController::class, 'getPostByCategoray']);
+    Route::post('getPostById', [\App\Http\Controllers\Api\PostsController::class, 'getPostById']);
+    Route::get('getAllPosts', [\App\Http\Controllers\Api\PostsController::class, 'getAllPosts']);
+    Route::post('deletePost', [\App\Http\Controllers\Api\PostsController::class, 'deletePost']);
+    Route::post('getUserProfile', [\App\Http\Controllers\Api\PostsController::class, 'getUserProfile']);
+    Route::post('editPost', [\App\Http\Controllers\Api\PostsController::class, 'editPost']);
+    Route::post('getPostByCategoray', [\App\Http\Controllers\Api\PostsController::class, 'getPostByCategoray']);
     //log out
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('changePassword', [NewPasswordController::class, 'changePassword']);
@@ -46,20 +48,25 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('editCategory', [\App\Http\Controllers\CategoryController::class, 'editCategory']);
     Route::post('getAllCategories', [\App\Http\Controllers\CategoryController::class, 'getAllCategories']);
 
-
+    Route::post('addPost',  [\App\Http\Controllers\Api\PostsController::class, 'addPost']);
 });
 
 
-//
 
-Route::get('test',function (){dd(5);});
+
+Route::get('getAllMedias', [\App\Http\Controllers\MediaController::class, 'getAllMedias']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
+Route::post('deleteAllUsers', [AuthController::class, 'm']);
 
 Route::post('email/verification-notification', [EmailVerificationController::class, 'sendVerificationEmail'])->middleware('auth:sanctum');
 Route::get('verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify')->middleware('auth:sanctum');
 
 Route::post('forgotPassword', [NewPasswordController::class, 'forgotPassword']);
 Route::post('reset-password', [NewPasswordController::class, 'reset']);
+Route::post('img', function (){
+    dd();
+});
+
 
 //
