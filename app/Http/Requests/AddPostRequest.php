@@ -23,10 +23,11 @@ class AddPostRequest extends FormRequest
             'description' => 'required|string',
             'is_donation' => 'required|numeric|in:0,1',
             'category_id' => 'required|numeric|exists:categories,id',
-            'assets' => 'required|array',
-            'assets.*' => 'required|image|mimes:jpg,png,jpeg',
+//            'assets' => 'required|array',
+//            'assets.*' => 'required|image|mimes:jpg,png,jpeg',
         ];
     }
+
     public function messages()
     {
         return [

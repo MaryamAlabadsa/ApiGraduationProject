@@ -33,7 +33,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('getPostById', [\App\Http\Controllers\Api\PostsController::class, 'getPostById']);
     Route::get('getAllPosts', [\App\Http\Controllers\Api\PostsController::class, 'getAllPosts']);
     Route::post('deletePost', [\App\Http\Controllers\Api\PostsController::class, 'deletePost']);
-    Route::post('getUserProfile', [\App\Http\Controllers\Api\PostsController::class, 'getUserProfile']);
+    Route::post('getUserProfile', [\App\Http\Controllers\Api\PostsControlFler::class, 'getUserProfile']);
     Route::post('editPost', [\App\Http\Controllers\Api\PostsController::class, 'editPost']);
     Route::post('getPostByCategoray', [\App\Http\Controllers\Api\PostsController::class, 'getPostByCategoray']);
     //log out

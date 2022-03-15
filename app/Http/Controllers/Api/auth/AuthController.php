@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -39,7 +40,7 @@ class AuthController extends Controller
         ]);
         dd($user->image_link);
 
-      //  event(new Registered($user));
+        //  event(new Registered($user));
 
         $token = $user->createToken('authtoken');
 
@@ -58,17 +59,9 @@ class AuthController extends Controller
         $request->authenticate();
 
 
-        $token = $request->user()->createToken('authtoken');
+        return UserResource::collection(User::all());
+//return new
 
-        return response()->json(
-            [
-                'message' => 'Logged in baby',
-                'data' => [
-                    'user' => $request->user(),
-                    'token' => $token->plainTextToken
-                ]
-            ]
-        );
     }
 
     public function logout(Request $request)

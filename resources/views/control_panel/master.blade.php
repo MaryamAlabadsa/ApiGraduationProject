@@ -415,7 +415,7 @@
                     </a>
                     <div class="collapse" id="ui-basic">
                         <ul class="nav flex-column sub-menu">
-                            <li class="nav-item"><a class="nav-link" href="control_panel.post.post">Posts</a>
+                            <li class="nav-item"><a class="nav-link" href="post">Posts</a>
                             </li>
                             <li class="nav-item"><a class="nav-link"
                                                     href="control_panel.Todo_list">TODO list</a></li>
@@ -457,18 +457,17 @@
             {{--start content--}}
             @yield('content')
             {{--end content--}}
-
-            {{--start footer--}}
-            <footer class="footer">
-                <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Premium <a
-                            href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
-                    <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2021. All rights reserved.</span>
-                </div>
-            </footer>
-            {{--end footer--}}
-
+{{--            --}}{{--start footer--}}
+{{--            <footer class="footer">--}}
+{{--                <div class="d-sm-flex justify-content-center justify-content-sm-between">--}}
+{{--                    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Premium <a--}}
+{{--                            href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>--}}
+{{--                    <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2021. All rights reserved.</span>--}}
+{{--                </div>--}}
+{{--            </footer>--}}
+{{--            --}}{{--end footer--}}
         </div>
+
     </div>
 </div>
 

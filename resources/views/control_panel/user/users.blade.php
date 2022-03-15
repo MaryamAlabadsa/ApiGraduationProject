@@ -11,43 +11,34 @@
                                     <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th class="sortStyle">user image<i class="ti-angle-down"></i></th>
                                         <th class="sortStyle">user Name<i class="ti-angle-down"></i></th>
                                         <th class="sortStyle">User Email<i class="ti-angle-down"></i></th>
-                                        <th class="sortStyle">Product<i class="ti-angle-down"></i></th>
-                                        <th class="sortStyle">Amount<i class="ti-angle-down"></i></th>
-                                        <th class="sortStyle">Deadline<i class="ti-angle-down"></i></th>
+                                        <th class="sortStyle">phone Number<i class="ti-angle-down"></i></th>
+                                        <th class="sortStyle">address<i class="ti-angle-down"></i></th>
+                                        <th class="sortStyle">Longitude&Latitude<i class="ti-angle-down"></i></th>
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    @foreach ($users as $user)
                                     <tr>
+                                        <td>{{$user->id}}</td>
                                         <td>
                                             <div class="d-flex ">
-                                                <img src="{{$post->first_user_image_link}}" >
+{{--                                                <img src="{{$post->first_user_image_link}}" >--}}
+
+                                                <img src="{{$user->image_link}}" >
+
                                             </div>
                                         </td>
-                                        <td>1</td>
-                                        <td>Herman Beck</td>
-                                        <td>John</td>
-                                        <td>Photoshop</td>
-                                        <td>$456.00</td>
-                                        <td>12 May 2017</td>
+
+                                        <td><a href="/user/{{$user->id}}">{{$user->name}}</a></td>
+                                        <td>{{$user->email}}</td>
+                                        <td>{{$user->phone_number}}</td>
+                                        <td>{{$user->address}}</td>
+                                        <td>{{$user->Longitude}} {{$user->Latitude}}</td>
                                     </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Herman Beck</td>
-                                        <td>Conway</td>
-                                        <td>Flash</td>
-                                        <td>$965.00</td>
-                                        <td>13 May 2017</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>John Richards</td>
-                                        <td>Alex</td>
-                                        <td>Premeire</td>
-                                        <td>$255.00</td>
-                                        <td>14 May 2017</td>
-                                    </tr>
+                                    @endforeach
 
                                     </tbody>
                                 </table>

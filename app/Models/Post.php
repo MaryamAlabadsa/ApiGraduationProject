@@ -82,7 +82,7 @@ class Post extends Model
         return $this->user ? ($this->user->img? url('/storage/'.$this->user->img) : url("control_panel_style/images/faces/face1.jpg")) :"control_panel_style/images/faces/face3.jpg";
     }
     public function getSecondUserImageLinkAttribute(){
-        return $this->second_user_data  ? ($this->user->img? url('/storage/'.$this->second_user_data ->img) : url("{{asset('control_panel_style/images/faces/face1.jpg')}}")) :"{{asset('control_panel_style/images/faces/face4.jpg')}}";
+        return $this->second_user_data  ? ($this->user->img? url('/storage/'.$this->second_user_data ->img) : url("control_panel_style/images/faces/face1.jpg")) :"control_panel_style/images/faces/face3.jpg";
 
     }
     // one post has one category

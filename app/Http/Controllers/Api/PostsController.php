@@ -26,13 +26,19 @@ class PostsController extends Controller
             'first_user' => Auth::id(),
         ]);
 
+
+        if ($request->hasFile('assets')){
             foreach ($request->assets as $file) {
-            $image_name = $file->store('public', 'public');
-            $post->media()->create([
-                'post_id' => $post->id,
-                'name' => $image_name,
-            ]);
+                $image_name = $file->store('public', 'public');
+                $post->media()->create([
+                    'post_id' => $post->id,
+                    'name' => $image_name,
+                ]);
+            }
         }
+
+
+
 
         return response()->json(
             [
@@ -45,8 +51,8 @@ class PostsController extends Controller
 
     public function getAllPosts()
     {
-        $post = Post::all();
-        return new PostResource($post);
+        return PostResource::collection(Post::all());
+//        return new PostResource($post);
 
 //        return response()->json(
 //            [

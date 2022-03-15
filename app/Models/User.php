@@ -59,6 +59,8 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function getImageLinkAttribute(){
-        return $this->img ?  url('/storage/'.$this->img) : url('/man3.png');
+//        return $this->img  ? ($this->img? url('/storage/'.$this->second_user_data ->img) : url("control_panel_style/images/faces/face1.jpg")) :"control_panel_style/images/faces/face3.jpg";
+
+        return $this->img ? url('/storage/'.$this->img) : url("control_panel_style/images/faces/face1.jpg");
     }
 }

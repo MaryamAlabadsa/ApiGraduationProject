@@ -14,7 +14,7 @@ class Media extends Model
     //one image belongs to one post
     public function post()
     {
-        return $this->belongsTo(Post::class, 'second_user');
+        return $this->belongsTo(Post::class, 'first_user');
     }
 
 }
