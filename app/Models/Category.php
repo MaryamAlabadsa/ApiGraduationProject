@@ -9,7 +9,7 @@ class Category extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'type',
+        'name',
     ];
     //one Category has many posts
     public function  posts(){

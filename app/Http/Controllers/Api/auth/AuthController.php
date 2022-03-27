@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\auth;
 
-use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -38,7 +37,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
 
         ]);
-        dd($user->image_link);
+//        dd($user->image_link);
 
         //  event(new Registered($user));
 
@@ -56,11 +55,41 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $request->authenticate();
-
-
-        return UserResource::collection(User::all());
-//return new
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            $user->makeVisible('password');
+            if (\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) { // true}else{//false}
+                $token = $user->createToken('authtoken');
+//        dd('kkk');
+                return response()->json(
+                    [
+                        'message' => 'Logged in baby',
+                        'data' => [
+                            'user' => $user,
+                            'token' => $token->plainTextToken
+                        ]
+                    ]
+                );
+            } else {
+                return response()->json(
+                    [
+                        'message' => 'the given was invalid',
+                        'errors' => [
+                            'password' => "These credentials do not match our records",
+                        ]
+                    ]
+                );
+            }
+        } else {
+            return response()->json(
+                [
+                    'message' => 'the given was invalid',
+                    'errors' => [
+                        'email' => "These credentials do not match our records",
+                    ]
+                ]
+            );
+        }
 
     }
 
@@ -77,7 +106,7 @@ class AuthController extends Controller
 
     }
 
-    function m()
+    public function m()
     {
         $post = User::all();
         $post->delete();
@@ -87,4 +116,12 @@ class AuthController extends Controller
             ]
         );
     }
+
+
+    public function test()
+    {
+        dd('test');
+
+    }
+
 }

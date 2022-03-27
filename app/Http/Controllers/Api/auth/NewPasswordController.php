@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Validation\Rules\Password as RulesPassword;
+use Illuminate\Validation\ValidationException;
 
 class NewPasswordController extends Controller
 {
@@ -23,7 +24,6 @@ class NewPasswordController extends Controller
         $status = Password::sendResetLink(
             $request->only('email')
         );
-       // dd($status);
         if ($status == Password::RESET_LINK_SENT) {
             return [
                 'status' => __($status)

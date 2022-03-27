@@ -12,6 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
+    protected $appends=['image_link'];
     use HasFactory, Notifiable, HasApiTokens;
 
     /**

@@ -22,7 +22,7 @@ class Post extends Model
         'category_id',
         'first_user',
         'second_user',
-        'number_of_requests'
+      //  'number_of_requests'
     ];
     protected $casts = [
         'is_donation' => 'boolean',
@@ -42,6 +42,15 @@ class Post extends Model
 //        return $c;
 //        return 99;
 //        return $this->category ? $this->category->type : 'category not found';
+    }
+
+    public function getNumberOfRequestsAttribute()
+    {
+        return $this->order?$this->order->count():0;
+//        ? ($this->user->img? url('/storage/'.$this->second_user_data ->img) : url("control_panel_style/images/faces/face1.jpg")) :"control_panel_style/images/faces/face3.jpg";
+//
+//        $wordlist = Wordlist::where('id', '<=', $correctedComparisons)->get();
+//        $wordCount = $wordlist->count();
     }
 
     public function getPostFirstUserAttribute()
@@ -104,13 +113,14 @@ class Post extends Model
     }
 
     //one post has many request
-    public function request()
+    public function order()
     {
-        return $this->hasMany(Request::class);
+        return $this->hasMany(Order::class);
     }
     //one post has many image
     public function media()
     {
         return $this->hasMany(Media::class);
     }
+
 }

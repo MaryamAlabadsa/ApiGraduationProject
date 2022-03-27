@@ -1,7 +1,7 @@
 <?php
 use App\Http\Controllers\ControlPanel\PostController;
 use App\Models\Post;
-use Illuminate\Foundation\Auth\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/clear-cache', function() {
@@ -66,6 +66,7 @@ Route::get('post-details', function () {
 
 
 Route::get('/users', function () {
+
     $users = User::all();
     return view('control_panel.user.users',['users'=>$users]);
 });
