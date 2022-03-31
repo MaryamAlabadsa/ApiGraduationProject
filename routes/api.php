@@ -19,14 +19,18 @@ Route::middleware('auth:sanctum', 'verified')->get('/user', function (Request $r
 
 Route::post('test', [AuthController::class, 'test']);
 
+//Route::get('donationPosts',function (){
+//    dd(5);
+//});
 
 Route::middleware(['auth:sanctum'])->group(function () {
     //post
     Route::apiResource('post',\Api\Post\PostController::class);
-    Route::apiResource('order',\Api\Request\OrderController::class);
+    Route::apiResource('order',\Api\Order\OrderController::class);
     Route::apiResource('Category',\Api\Category\CategoryController::class);
 
     Route::get('donationPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getDonationPosts']);
+
 //    Route::get('getAllPosts', [\App\Http\Controllers\Api\PostsController::class, 'getAllPosts']);
 //    Route::post('deletePost', [\App\Http\Controllers\Api\PostsController::class, 'deletePost']);
 //    Route::post('getUserProfile', [\App\Http\Controllers\Api\PostsController::class, 'getUserProfile']);
@@ -40,7 +44,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 //    Route::post('getAllRequests', [\App\Http\Controllers\RequestsController::class, 'getAllRequests']);
 //    Route::post('deleteRequest', [\App\Http\Controllers\RequestsController::class, 'deleteRequest']);
 //    //Category
-    Route::post('addCategory', [\App\Http\Controllers\CategoryController::class, 'addCategory']);
+//    Route::post('addCategory', [\App\Http\Controllers\CategoryController::class, 'addCategory']);
 //    Route::post('editCategory', [\App\Http\Controllers\CategoryController::class, 'editCategory']);
 //    Route::get('getAllCategories', [\App\Http\Controllers\CategoryController::class, 'getAllCategories']);
 //

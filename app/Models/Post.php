@@ -14,7 +14,7 @@ class Post extends Model
 
     use HasFactory;
 
-    protected $appends = ['post_category', 'post_first_user', 'post_second_user','post_first_user_email','post_second_user_email'];
+    protected $appends = ['post_category', 'post_first_user', 'post_second_user', 'post_first_user_email', 'post_second_user_email'];
     protected $fillable = [
         'title',
         'description',
@@ -22,7 +22,7 @@ class Post extends Model
         'category_id',
         'first_user',
         'second_user',
-      //  'number_of_requests'
+        //  'number_of_requests'
     ];
     protected $casts = [
         'is_donation' => 'boolean',
@@ -30,23 +30,24 @@ class Post extends Model
 
     public function getPostCategoryAttribute()
     {
-//        $c = Post::with('category')->where('id',$this->category_id)->first();
-//        $obj =json_decode($c);
-//        return $obj->id;
-//        return $this->attributes[$c] ;
-        $c = Category::where('id', $this->category_id)->first();
-
-//        echo json_decode($c)->type;
-//        return json_decode($c['type']);
-        return json_decode($c) ? json_decode($c)->type : 'll';
-//        return $c;
-//        return 99;
-//        return $this->category ? $this->category->type : 'category not found';
+////        $c = Post::with('category')->where('id',$this->category_id)->first();
+////        $obj =json_decode($c);
+////        return $obj->id;
+////        return $this->attributes[$c] ;
+//        $c = Category::where('id', $this->category_id)->first();
+//
+////        echo json_decode($c)->type;
+////        return json_decode($c['type']);
+//        return json_decode($c) ? json_decode($c)->type : 'll';
+////        return $c;
+////        return 99;
+////        return $this->category ? $this->category->type : 'category not found';
+        return $this->category ? $this->category->type : 'category not found';
     }
 
     public function getNumberOfRequestsAttribute()
     {
-        return $this->order?$this->order->count():0;
+        return $this->order ? $this->order->count() : 0;
 //        ? ($this->user->img? url('/storage/'.$this->second_user_data ->img) : url("control_panel_style/images/faces/face1.jpg")) :"control_panel_style/images/faces/face3.jpg";
 //
 //        $wordlist = Wordlist::where('id', '<=', $correctedComparisons)->get();
@@ -75,25 +76,29 @@ class Post extends Model
 
     public function getPostMediaAttribute()
     {
-        $media=[];
-        if ($this->media->count() ){
-            foreach ($this->media as $medium){
-                array_push($media,url('/storage/'.$medium->name) );
+        $media = [];
+        if ($this->media->count()) {
+            foreach ($this->media as $medium) {
+                array_push($media, url('/storage/' . $medium->name));
             }
-        }else{
+        } else {
             array_push($media, url('/man3.png'));
 
         }
         return $media;
     }
 
-    public function getFirstUserImageLinkAttribute(){
-        return $this->user ? ($this->user->img? url('/storage/'.$this->user->img) : url("control_panel_style/images/faces/face1.jpg")) :"control_panel_style/images/faces/face3.jpg";
+    public function getFirstUserImageLinkAttribute()
+    {
+        return $this->user ? ($this->user->img ? url('/storage/' . $this->user->img) : url("control_panel_style/images/faces/face1.jpg")) : "control_panel_style/images/faces/face3.jpg";
     }
-    public function getSecondUserImageLinkAttribute(){
-        return $this->second_user_data  ? ($this->user->img? url('/storage/'.$this->second_user_data ->img) : url("control_panel_style/images/faces/face1.jpg")) :"control_panel_style/images/faces/face3.jpg";
+
+    public function getSecondUserImageLinkAttribute()
+    {
+        return $this->second_user_data ? ($this->user->img ? url('/storage/' . $this->second_user_data->img) : url("control_panel_style/images/faces/face1.jpg")) : "control_panel_style/images/faces/face3.jpg";
 
     }
+
     // one post has one category
     public function category()
     {
@@ -117,6 +122,7 @@ class Post extends Model
     {
         return $this->hasMany(Order::class);
     }
+
     //one post has many image
     public function media()
     {

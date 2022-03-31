@@ -18,11 +18,11 @@ class Order extends Model
 
     // one request has one post
     public function post(){
-        return $this ->belongsTo(Post::class);
+        return $this->belongsTo(Post::class,'post_id');
     }
     // one request has one user
     public function user(){
-        return $this ->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function getIsDonationPostAttribute()
