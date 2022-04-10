@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Post;
 
+use App\Http\Resources\Order\OrderResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PostResource extends JsonResource
@@ -20,12 +21,18 @@ class PostResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'is_donation' => $this->is_donation,
+            'category_id' => $this->category_id,
+            'category_name' => $this->category_name,
             'number_of_requests' => $this->number_of_requests,
             'post_first_user' => $this->post_first_user,
             'post_second_user' => $this->post_second_user,
             'post_first_user_email' => $this->post_first_user_email,
             'post_second_user_email' => $this->post_second_user_email,
-
+            'post_media' => $this->post_media,
+            'first_user_image_link' => $this->first_user_image_link,
+//            'is_ordered' => $this->is_ordered,
+//            'orders' => $this->post_orders,
+//            'orders' => new OrderResource($this->order),
         ];
     }
 }

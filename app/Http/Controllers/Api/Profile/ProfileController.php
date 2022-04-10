@@ -13,66 +13,54 @@ class ProfileController extends Controller
 {
     public function getDonationPosts()
     {
-//        $ma = Order::all()->load('post');
-//        dd($ma);
-//        $user = Auth::id();
-//
-////        dd($user);
-        $posts = Post::where('is_donation', 0)->get();
-//        return new OrderCollection($ma);
-//        return Order::all();
-        $orders = Order::whereHas('post', function ($quary) {
-            $quary->where('is_donation', 1);
-        })->get();
-//
-////        foreach ($posts->$p){
-////            if ($p->first_user === $user->getAuthIdentifier()) {
-//                $all_data = $orders->merge($posts);
-////            }
-////            }
-////        if ($posts->first_user === $user &&$orders->user_id === $user) {
-//            $all_data = ($orders->toArray())->merge($posts->toArray());
-        dd(array_merge($orders->toArray(),$posts->toArray()));
-
-//        $all_data = array_merge();
-//        dd($orders->toArray(), $posts->toArray());
-
-//            $all_sorted_data = $all_data->sortByDesc('created_at');
-//            return response()->json(
-//                [
-//                    'message' => 'returned successfully',
-//                    'data' => [
-////                        'donations posts' => $all_sorted_data
-//                        'donations posts' => $all_data
-//                    ]
-//                ]
-//            );
-////        }
-//
-//
-////        return response()->json(
-////            [
-////                'message' => 'returned successfully',
-////                'data' => [
-////                    'donations posts' => "0"
-////                ]
-////            ]
-////        );
-
+        $userId = Auth::id();
+        $posts = Post::where([['is_donation', '=', 0]
+            , ['first_user', '=', $userId]
+        ])->get();
+        $orders = Order::whereIn('post_id', Post::select('id')->where([['is_donation', '=', 1]
+            , ['first_user', '=', $userId]
+        ])->get())->get();
+//        dd($orders);
+        $all_data = $orders->merge($posts);
+        $all_sorted_data = $all_data->sortByDesc('created_at');
+        $data = array();
+        foreach ($all_sorted_data as $all_sorted_datum) {
+            array_push($data, $all_sorted_datum->get_data);
+        }
+//        dd($data);
+        return response()->json(
+            [
+                'message' => 'returned successfully',
+                'data' => [
+                    'donations posts' => $data
+//                    'donations posts' => $all_data
+                ]
+            ]
+        );
     }
 
 
-    public function getRequstedPosts(PostRequest $request)
+    public function getRequestPosts()
     {
         $posts = Post::where('is_donation', 1)->get();
-        $orders = Order::where('is_donation', 1)->get();
+//        dd($posts);
+        $orders = Order::whereIn('post_id', Post::select('id')->where('is_donation', 0)->get())->get();
+//        dd($orders);
         $all_data = $orders->merge($posts);
+//        dd($all_data);
         $all_sorted_data = $all_data->sortByDesc('created_at');
+//        dd($all_sorted_data);
+        $data = array();
+        foreach ($all_sorted_data as $all_sorted_datum) {
+            array_push($data, $all_sorted_datum->get_data);
+        }
+//        dd($data);
         return response()->json(
             [
-                'message' => 'Logged in baby',
+                'message' => 'returned successfully',
                 'data' => [
-                    'donations posts' => $all_sorted_data
+                    'Requests posts' => $data
+//                    'donations posts' => $all_data
                 ]
             ]
         );

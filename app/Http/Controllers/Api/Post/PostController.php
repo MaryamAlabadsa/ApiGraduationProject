@@ -8,6 +8,7 @@ use App\Http\Requests\PostRequest;
 use App\Http\Resources\Post\PostCollection;
 use App\Http\Resources\Post\PostResource;
 use App\Models\Post;
+use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,8 +21,8 @@ class PostController extends Controller
      */
     public function index()
     {
-//        dd(Post::all());
         return new PostCollection(Post::all());
+//        return Post::all()->is_ordered;
     }
 
     /**
@@ -64,7 +65,9 @@ class PostController extends Controller
     public function show(Post $post)
     {
         return ['message' => 'Successfully',
-            'data' => PostResource::make($post),
+//            'data' => PostResource::make($post),
+//            'data' => $post->post_orders,
+            'data' => $post->is_ordered,
         ];
     }
 
@@ -93,7 +96,7 @@ class PostController extends Controller
                     'data' => null,
                 ];
             }
-        } else{
+        } else {
             return ['message' => 'this item has been taken',
                 'data' => null,
             ];
@@ -111,10 +114,11 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $post->delete();
-        return ['message' => 'You have successfully delete your order.',
+        return ['message' => 'You have successfully delete your post.',
         ];
     }
-    public function getPostByCategoray(PostRequest $request)
+
+    public function getPostByCategoray(Request $request)
     {
         $post = Post::where('category_id', $request->category_id)->get();
         return response()->json(
@@ -125,5 +129,28 @@ class PostController extends Controller
                 ]
             ]
         );
+    }
+
+    public function getPostOrders($id)
+    {
+        $userId = Auth::id();
+//        $post = Post::with('order')->where([
+//            ['id', '=', $id] , ['first_user', '=', $userId]
+//        ]);
+////        dd($post);
+//        if ($post != null)
+//            return response()->json($post);
+////            return new PostCollection($post);
+//        else
+//            return response()->json("null");
+        $posts = Post::with('order')->where('id', $id)->where('first_user', $userId);
+        $postOrders = $posts->get();
+
+        return response()->json(
+            [
+                $postOrders
+            ]
+        );
+
     }
 }

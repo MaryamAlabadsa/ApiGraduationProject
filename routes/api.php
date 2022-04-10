@@ -26,29 +26,18 @@ Route::post('test', [AuthController::class, 'test']);
 Route::middleware(['auth:sanctum'])->group(function () {
     //post
     Route::apiResource('post',\Api\Post\PostController::class);
+
     Route::apiResource('order',\Api\Order\OrderController::class);
     Route::apiResource('Category',\Api\Category\CategoryController::class);
 
-    Route::get('donationPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getDonationPosts']);
+    Route::get('PostOrders/{id}', [\App\Http\Controllers\Api\Post\PostController::class, 'getPostOrders']);
 
-//    Route::get('getAllPosts', [\App\Http\Controllers\Api\PostsController::class, 'getAllPosts']);
-//    Route::post('deletePost', [\App\Http\Controllers\Api\PostsController::class, 'deletePost']);
-//    Route::post('getUserProfile', [\App\Http\Controllers\Api\PostsController::class, 'getUserProfile']);
-//    Route::post('editPost', [\App\Http\Controllers\Api\PostsController::class, 'editPost']);
-//    Route::post('getPostByCategoray', [\App\Http\Controllers\Api\PostsController::class, 'getPostByCategoray']);
+    Route::get('donationPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getDonationPosts']);
+    Route::get('RequestsPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getRequestPosts']);
+
 //    //log out
-//    Route::post('logout', [AuthController::class, 'logout']);
-//    Route::post('changePassword', [NewPasswordController::class, 'changePassword']);
-//    //request
-//    Route::post('addRequest', [\App\Http\Controllers\RequestsController::class, 'addRequest']);
-//    Route::post('getAllRequests', [\App\Http\Controllers\RequestsController::class, 'getAllRequests']);
-//    Route::post('deleteRequest', [\App\Http\Controllers\RequestsController::class, 'deleteRequest']);
-//    //Category
-//    Route::post('addCategory', [\App\Http\Controllers\CategoryController::class, 'addCategory']);
-//    Route::post('editCategory', [\App\Http\Controllers\CategoryController::class, 'editCategory']);
-//    Route::get('getAllCategories', [\App\Http\Controllers\CategoryController::class, 'getAllCategories']);
-//
-//    Route::post('addPost',  [\App\Http\Controllers\Api\Post\PostController::class, 'index']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('changePassword', [NewPasswordController::class, 'changePassword']);
 
 });
 
@@ -67,6 +56,12 @@ Route::get('verify-email/{id}/{hash}', [EmailVerificationController::class, 'ver
 
 Route::post('forgotPassword', [NewPasswordController::class, 'forgotPassword']);
 Route::post('reset-password', [NewPasswordController::class, 'reset']);
+
+
+
+
+
+
 
 
 

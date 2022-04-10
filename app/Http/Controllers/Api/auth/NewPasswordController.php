@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\User\UserResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -79,8 +80,8 @@ class NewPasswordController extends Controller
         ]);
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'User Registered',
-                'data' => [$validator->errors()]
+                'message' => $validator->errors(),
+//                'data' => [$validator->errors()]
             ], 422);
         }
         $user = $request->user();
@@ -89,7 +90,9 @@ class NewPasswordController extends Controller
                 'password'=>Hash::make($request->password)
             ]);
             return response()->json([
-                'message' => 'password successfully updated '
+                'message' => 'password successfully updated ',
+                'user' => UserResource::make($user),
+
             ], 200);
         } else {
             return response()->json([

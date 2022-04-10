@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\auth;
 
+use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -46,7 +47,9 @@ class AuthController extends Controller
         return response()->json(
             [
                 'message' => 'User Registered',
-                'data' => ['token' => $token->plainTextToken, 'user' => $user]
+                'data' => ['token' => $token->plainTextToken,
+                    'user' => UserResource::make($user),
+                ]
             ]
         );
 
@@ -65,7 +68,7 @@ class AuthController extends Controller
                     [
                         'message' => 'Logged in baby',
                         'data' => [
-                            'user' => $user,
+                            'user' => UserResource::make($user),
                             'token' => $token->plainTextToken
                         ]
                     ]
@@ -75,9 +78,10 @@ class AuthController extends Controller
                     [
                         'message' => 'the given was invalid',
                         'errors' => [
-                            'password' => "These credentials do not match our records",
-                        ]
-                    ]
+                            'password' => ["These credentials do not match our records",
+]
+                        ],
+                    ],404
                 );
             }
         } else {
@@ -85,9 +89,11 @@ class AuthController extends Controller
                 [
                     'message' => 'the given was invalid',
                     'errors' => [
-                        'email' => "These credentials do not match our records",
+                        'email' =>[
+                            "These credentials do not match our records"
+                        ] ,
                     ]
-                ]
+                ],401
             );
         }
 
@@ -95,7 +101,6 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-
         $request->user()->tokens()->delete();
 
         return response()->json(
@@ -103,24 +108,6 @@ class AuthController extends Controller
                 'message' => 'Logged out'
             ]
         );
-
-    }
-
-    public function m()
-    {
-        $post = User::all();
-        $post->delete();
-        return response()->json(
-            [
-                'message' => 'Deleted Successfully ',
-            ]
-        );
-    }
-
-
-    public function test()
-    {
-        dd('test');
 
     }
 

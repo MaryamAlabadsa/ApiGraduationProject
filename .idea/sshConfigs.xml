@@ -2,7 +2,7 @@
 <project version="4">
   <component name="SshConfigs">
     <configs>
-      <sshConfig host="54.234.87.126" id="7152c54d-5c03-44c2-82e0-dcbc5f2f72c6" keyPath="C:\Users\Eng.Nabil\Downloads\maryam.pem" port="22" nameFormat="DESCRIPTIVE" username="ubuntu" />
+      <sshConfig host="3.84.126.63" id="7152c54d-5c03-44c2-82e0-dcbc5f2f72c6" keyPath="C:\Users\Eng.Nabil\Downloads\maryam.pem" port="22" nameFormat="DESCRIPTIVE" username="ubuntu" />
     </configs>
   </component>
 </project>
