@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    protected $appends=['image_link'];
+//    protected $appends=['image_link'];
     use HasFactory, Notifiable, HasApiTokens;
 
     /**
@@ -29,6 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'address',
         'Longitude',
         'Latitude',
+        'fcm_token',
     ];
 
     /**
@@ -54,14 +55,18 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendPasswordResetNotification($token)
     {
         $url = 'https://spa.test/reset-password?token=' . $token;
-//        $url = 'https://54.210.44.4/reset-password?token=' . $token;
 
         $this->notify(new ResetPasswordNotification($url));
     }
 
     public function getImageLinkAttribute(){
-//        return $this->img  ? ($this->img? url('/storage/'.$this->second_user_data ->img) : url("control_panel_style/images/faces/face1.jpg")) :"control_panel_style/images/faces/face3.jpg";
-
         return $this->img ? url('/storage/'.$this->img) : url("control_panel_style/images/faces/face1.jpg");
     }
+
+    //one user has many notifications
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
 }

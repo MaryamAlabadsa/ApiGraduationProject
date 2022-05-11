@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\Order\OrderResource;
 use App\Http\UtcDateTime;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,6 +24,7 @@ class Post extends Model
         'second_user',
         //  'number_of_requests'
     ];
+
     /**
      * @var mixed
      */
@@ -30,16 +32,25 @@ class Post extends Model
     public function getGetDataAttribute()
     {
         return [
+            'status' => 0,
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
             'is_donation' => $this->is_donation,
+            'category_id' => $this->category_id,
+            'first_user_id' => $this->first_user,
+            'second_user_id' => $this->second_user,
+            'category_name' => $this->category_name,
             'number_of_requests' => $this->number_of_requests,
-            'post_first_user' => $this->post_first_user,
-            'post_second_user' => $this->post_second_user,
+            'first_user_name' => $this->first_user_name,
+            'second_user_name' => $this->second_user_name,
             'post_first_user_email' => $this->post_first_user_email,
             'post_second_user_email' => $this->post_second_user_email,
             'post_media' => $this->post_media,
+            'first_user_image_link' => $this->first_user_image_link,
+            'is_ordered' => $this->is_ordered != false ? true : false,
+            'is_he_the_owner_of_the_post' => $this->first_user===Auth::id()?true:false,
+            'is_completed' => $this->second_user===null?false:true,
 
         ];
     }
@@ -48,35 +59,24 @@ class Post extends Model
         'is_donation' => 'boolean',
     ];
 
-    public function getPostOrdersAttribute(){
-        return $this->orders() ? $this->orders() : 'orders not found';
+    public function getPostOrdersAttribute()
+    {
+        return $this->orders != null ? $this->orders : null;
     }
 
 
     public function getIsOrderedAttribute()
     {
         $userId = Auth::id();
-        return $this->orders()
-                ->where('user_id', $userId)
-                ->first() ?? false;
-
+        $data = $this->orders
+            ->where('user_id', $userId)
+            ->first();
+        return $data != null ? $data : false;
     }
-
 
 
     public function getCategoryNameAttribute()
     {
-////        $c = Post::with('category')->where('id',$this->category_id)->first();
-////        $obj =json_decode($c);
-////        return $obj->id;
-////        return $this->attributes[$c] ;
-//        $c = Category::where('id', $this->category_id)->first();
-//
-////        echo json_decode($c)->type;
-////        return json_decode($c['type']);
-//        return json_decode($c) ? json_decode($c)->type : 'll';
-////        return $c;
-//        return 99;
         return $this->category ? $this->category->name : 'category not found';
     }
 
@@ -87,17 +87,37 @@ class Post extends Model
 
     //user
 
-    public function getPostFirstUserAttribute()
+    public function getIsHeTheOwnerOfThePostAttribute()
+    {
+        $userId = Auth::id();
+        return $this->post ? ($this->user->id = $userId ? $userId : false) : 'user not found';
+    }
+
+    public function getFirstUserIdAttribute()
+    {
+        return $this->user ? $this->user->id : 'user not found';
+    }
+    public function getFirstUserTokenAttribute()
+    {
+        return $this->user ? $this->user->fcm_token : 'user not found';
+    }
+
+    public function getFirstUserNameAttribute()
     {
         return $this->user ? $this->user->name : 'user not found';
     }
 
-    public function getPostSecondUserAttribute()
+
+    public function getSecondUserNameAttribute()
     {
         return $this->second_user_data ? $this->second_user_data->name : 'not found';
     }
+    public function getSecondUserTokenAttribute()
+    {
+        return $this->second_user_data ? $this->second_user_data->fcm_token : 'user not found';
+    }
 
-    public function getPostFirstUserEmailAttribute()
+    public function getFirstUserEmailAttribute()
     {
         return $this->user ? $this->user->email : 'user not found';
     }
@@ -128,27 +148,10 @@ class Post extends Model
                 array_push($media, url('/storage/' . $medium->name));
             }
         } else {
-            array_push($media, url('/man3.png'));
-
+            array_push($media, url('/control_panel_style/images/faces/profile/profile.jpg'));
         }
         return $media;
     }
-//    public function getOrdersAttribute()
-//    {
-//        $media = [];
-//        if ($this->media->count()) {
-//            foreach ($this->media as $medium) {
-//                array_push($media, url('/storage/' . $medium->name));
-//            }
-//        } else {
-//            array_push($media, url('/man3.png'));
-//
-//        }
-//        return $media;
-//    }
-
-
-
 
     // one post has one category
     public function category()
@@ -179,5 +182,11 @@ class Post extends Model
     {
         return $this->hasMany(Media::class);
     }
+    //one post has many notifications
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
 
 }

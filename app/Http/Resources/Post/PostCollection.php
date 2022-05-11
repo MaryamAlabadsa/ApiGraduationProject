@@ -14,7 +14,7 @@ class  PostCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return ['message' => 'added Successfully',
+        return ['message' => 'Done',
             'data' => $this->collection,
         ];
     }

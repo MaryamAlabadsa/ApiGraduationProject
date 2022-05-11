@@ -17,37 +17,45 @@ Route::middleware('auth:sanctum', 'verified')->get('/user', function (Request $r
 
 });
 
-Route::post('test', [AuthController::class, 'test']);
-
-//Route::get('donationPosts',function (){
-//    dd(5);
-//});
 
 Route::middleware(['auth:sanctum'])->group(function () {
     //post
-    Route::apiResource('post',\Api\Post\PostController::class);
+    Route::apiResource('post', \Api\Post\PostController::class);
 
-    Route::apiResource('order',\Api\Order\OrderController::class);
-    Route::apiResource('Category',\Api\Category\CategoryController::class);
+    Route::apiResource('order', \Api\Order\OrderController::class);
+    Route::apiResource('Category', \Api\Category\CategoryController::class);
 
-    Route::get('PostOrders/{id}', [\App\Http\Controllers\Api\Post\PostController::class, 'getPostOrders']);
+    Route::post('PostOrders', [\App\Http\Controllers\Api\Order\OrderController::class, 'getPostOrders']);
+    Route::post('PostByCategory', [\App\Http\Controllers\Api\Post\PostController::class, 'getPostByCategory']);
+    Route::post('PostDividedByIsDonation', [\App\Http\Controllers\Api\Post\PostController::class, 'getPostDividedByIsDonation']);
 
-    Route::get('donationPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getDonationPosts']);
-    Route::get('RequestsPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getRequestPosts']);
+    Route::post('myDonationPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getMyDonationPosts']);
+    Route::post('myRequestsPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getMyRequestPosts']);
+    Route::post('UserDonationPosts/{id}', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getUserDonationPosts']);
+    Route::post('UserRequestPosts/{id}', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getUserRequestPosts']);
 
-//    //log out
+
+
+
+    Route::post('myProfileInfo', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getMyProfileInfo']);
+    Route::post('userProfileInfo/{id}', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getUserProfileInfo']);
+
+    //log out
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('changePassword', [NewPasswordController::class, 'changePassword']);
+    Route::get("sendDeviceToken/{token}", function ($token) {
+        Illuminate\Support\Facades\Auth::user()->update(['fcm_token'=>$token]);
+        return ['message' => 'updated Successfully'];
+    });
+    Route::get('notification', [\App\Http\Controllers\NotificationController::class, 'index']);
+
 
 });
 
 
 
-
 Route::get('getAllMedias', [\App\Http\Controllers\Api\Media\MediaController::class, 'getAllMedias']);
-//Route::post('login',function (){
-//    dd("kkk");
-//});
+
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 
