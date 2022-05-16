@@ -21,13 +21,20 @@ class Notification extends Model
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
+
     public function receiver_user()
     {
         return $this->belongsTo(User::class, 'receiver_id');
     }
+
     //one Notification has one post
     public function second_user_data()
     {
         return $this->belongsTo(Post::class, 'post_id');
+    }
+
+    public function getSenderNameAttribute()
+    {
+        return $this->sender_user ? $this->sender_user->name : 'sender name not found';
     }
 }

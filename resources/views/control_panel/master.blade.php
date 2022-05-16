@@ -456,6 +456,7 @@
         <div class="main-panel">
             {{--start content--}}
             @yield('content')
+
             {{--end content--}}
 {{--            --}}{{--start footer--}}
 {{--            <footer class="footer">--}}

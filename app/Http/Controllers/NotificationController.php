@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Http\Requests\StoreNotificationRequest;
 use App\Http\Requests\UpdateNotificationRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class NotificationController extends Controller
 {
@@ -18,13 +19,10 @@ class NotificationController extends Controller
     public function index()
     {
         $user = Auth::id();
-        $notif = Notification::all()
-            ->where('receiver_id', $user)
-            ->groupBy('post_id')
-            ->sortByDesc('created_at')
-            ->paginate(5);
-//            ->first();
-//            ->take(5)->get();
+        $notif = Notification::
+        where('receiver_id', $user)
+//            ->groupBy('post_id')
+            ->orderBy('created_at', "desc")->get();
         return
             [
                 'message' => 'done',

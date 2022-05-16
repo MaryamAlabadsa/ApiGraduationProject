@@ -39,7 +39,7 @@ class Post extends Model
             'is_donation' => $this->is_donation,
             'category_id' => $this->category_id,
             'first_user_id' => $this->first_user,
-            'second_user_id' => $this->second_user,
+            'second_user_id' => $this->second_user_data?$this->second_user_data->id:0,
             'category_name' => $this->category_name,
             'number_of_requests' => $this->number_of_requests,
             'first_user_name' => $this->first_user_name,
@@ -49,6 +49,7 @@ class Post extends Model
             'post_media' => $this->post_media,
             'first_user_image_link' => $this->first_user_image_link,
             'is_ordered' => $this->is_ordered != false ? true : false,
+            'Order_id' => $this->is_ordered != false ? ($this->order->id ): 0,
             'is_he_the_owner_of_the_post' => $this->first_user===Auth::id()?true:false,
             'is_completed' => $this->second_user===null?false:true,
 
@@ -95,7 +96,7 @@ class Post extends Model
 
     public function getFirstUserIdAttribute()
     {
-        return $this->user ? $this->user->id : 'user not found';
+        return $this->user ? $this->user->id : 0;
     }
     public function getFirstUserTokenAttribute()
     {
@@ -151,6 +152,10 @@ class Post extends Model
             array_push($media, url('/control_panel_style/images/faces/profile/profile.jpg'));
         }
         return $media;
+    }
+
+    public function  getOrderIdAttribute(){
+        return $this->orders ?($this->orders->user_id == Auth::id()?$this->orders->user_id :0):0;
     }
 
     // one post has one category

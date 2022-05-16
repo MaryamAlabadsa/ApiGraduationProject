@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddPostRequest;
 use App\Http\Requests\PostRequest;
+use App\Http\Resources\Category\CategoryResource;
 use App\Http\Resources\Order\OrderResource;
 use App\Http\Resources\Post\PostCollection;
 use App\Http\Resources\Post\PostResource;
+use App\Models\Category;
 use App\Models\Notification;
 use App\Models\Post;
 use App\Models\User;
@@ -25,7 +27,22 @@ class PostController extends Controller
      */
     public function index()
     {
-        return new PostCollection(Post::all());
+//        $categories = Category::all();
+        $posts = Post::all()->sortByDesc('created_at');;
+
+//        return response()->json([
+//            'message' => 'Welcome to my app',
+//            'data' => [
+//                'categories' => CategoryResource::collection($categories),
+////                'posts' =>     PostResource::collection($posts),
+//                'posts' => $posts,
+//            ],
+//        ], 200);
+
+//        return new PostCollection($posts);
+//        return new PostCollection(Post::all());
+
+        return new PostCollection(Post::orderBy('created_at',"desc")->get());
     }
 
     /**
@@ -90,8 +107,8 @@ class PostController extends Controller
                     $post->save();
                     $post_owner_name = $post->first_user_name;
                     $token = $post->second_user_token;
-                    if (!$token)
-                        sendnotification($token, "new request", $post_owner_name . "  accept your request",$post->id);
+//                    if ($token)
+                    sendnotification($token, "accept request", $post_owner_name . "  accept your request", $post->id);
                     Notification::create([
                         'post_id' => $post->id,
                         'sender_id' => Auth::id(),

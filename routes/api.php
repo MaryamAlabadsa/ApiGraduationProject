@@ -43,6 +43,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //log out
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('changePassword', [NewPasswordController::class, 'changePassword']);
+    Route::post('updateUserImage', [AuthController::class, 'updateUserImage']);
     Route::get("sendDeviceToken/{token}", function ($token) {
         Illuminate\Support\Facades\Auth::user()->update(['fcm_token'=>$token]);
         return ['message' => 'updated Successfully'];

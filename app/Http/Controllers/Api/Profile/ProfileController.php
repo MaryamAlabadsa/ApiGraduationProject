@@ -63,18 +63,19 @@ class ProfileController extends Controller
         );
     }
 
-    public function getUserProfileInfo($userId)
+    public function getUserProfileInfo($id)
     {
-        $user = User::where('id', $userId)->first();
+        $user = User::where('id', $id)->first();
         $user_image = $user->img ? url('/storage/' . $user->img) : url("control_panel_style/images/faces/face1.jpg");
-
+dd($this->DonationPosts($id));
         return response()->json(
             [
                 'message' => 'returned successfully',
                 'data' => [
-                   'user'=> UserResource::make($user),
-                    'num_donation_post' => count($this->DonationPosts($userId)),
-                    'num_request_post' => count($this->RequestPosts($userId)),
+                    'user_image' => $user_image,
+                    'user_name' =>$user->name,
+                    'num_donation_post' => count($this->DonationPosts($id)),
+                    'num_request_post' => count($this->RequestPosts($id)),
                 ]
             ]
         );
@@ -92,8 +93,9 @@ class ProfileController extends Controller
                 'message' => 'returned successfully',
                 'data' => [
                     'user_image' => $user_image,
-                    User::select('name')->where('id', $userId)->first(),
-                    'num_donation_post' => count($this->DonationPosts($userId)),
+                    'user_name' =>Auth::user()->name,
+//                    User::select('name')->where('id', $userId)->first(),
+                        'num_donation_post' => count($this->DonationPosts($userId)),
                     'num_request_post' => count($this->RequestPosts($userId)),
                 ]
             ]

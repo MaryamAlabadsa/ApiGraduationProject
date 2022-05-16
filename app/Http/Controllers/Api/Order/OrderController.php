@@ -35,13 +35,13 @@ class OrderController extends Controller
     public function store(OrderRequest $request)
     {
         $token = Post::where('id', $request->post_id)->first()->first_user_token;
+//        $token = Post::where('id', $request->post_id)->first()->first_user_token;
         $order = Order::create([
             'massage' => $request->massage,
             'post_id' => $request->post_id,
             'user_id' => Auth::id(),
         ]);
-        if (!$token)
-            sendnotification($token, 'تمت اضافة طلب جديد', 'تمت اضافة طلب جديد',$request->post_id);
+//        if ($token)
 
         Notification::create([
             'post_id' => $request->post_id,
@@ -49,6 +49,8 @@ class OrderController extends Controller
             'receiver_id' => Post::where('id', $request->post_id)->first()->first_user,
             'type' => 'add_request',
         ]);
+        sendnotification($token, 'add new request', Auth::user()->getAuthIdentifierName() .' send you request',$request->post_id);
+
         return ['message' => 'added Successfully',
             'data' => OrderResource::make($order),
         ];
@@ -89,15 +91,18 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        if ($order) {
-
+        $user = Auth::id();
+        if ($order->user_id == $user) {
             $order->delete();
+            $notification=Notification::where([['sender_id', '=', $user], ['post_id', '=', $order->post_id]])->first();
+           $notification->delete();
             return ['message' => 'You have successfully delete your order.',
             ];
-        } else {
-            return ['message' => 'this order has been deleted because we did not found it',
+        } else
+            return ['message' => 'You can not delete this order.',
             ];
-        }
+
+
     }
 
     public function getPostOrders(Request $request)

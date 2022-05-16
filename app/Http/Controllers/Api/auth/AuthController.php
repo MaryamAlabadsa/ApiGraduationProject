@@ -6,6 +6,7 @@ use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
 use App\Http\Requests\Auth\LoginRequest;
@@ -30,7 +31,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'img' => $request->img->store('public', 'public'),
+            'img' => $request->image->store('public', 'public'),
             'phone_number' => $request->phone_number,
             'address' => $request->address,
             'Longitude' => $request->Longitude,
@@ -38,6 +39,9 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
 
         ]);
+
+        //  $user->update(['img'=>$request->image->store('public', 'public')]);
+
 //        dd($user->image_link);
 
         //  event(new Registered($user));
@@ -79,9 +83,9 @@ class AuthController extends Controller
                         'message' => 'the given was invalid',
                         'errors' => [
                             'password' => ["These credentials do not match our records",
-]
+                            ]
                         ],
-                    ],404
+                    ], 404
                 );
             }
         } else {
@@ -89,11 +93,11 @@ class AuthController extends Controller
                 [
                     'message' => 'the given was invalid',
                     'errors' => [
-                        'email' =>[
+                        'email' => [
                             "These credentials do not match our records"
-                        ] ,
+                        ],
                     ]
-                ],401
+                ], 401
             );
         }
 
@@ -109,6 +113,12 @@ class AuthController extends Controller
             ]
         );
 
+    }
+
+    public function updateUserImage(Request $request)
+    {
+       Auth::user()->update(['img' => $request->image->store('public', 'public')]);
+        return ['message' => 'updated Successfully'];
     }
 
 }

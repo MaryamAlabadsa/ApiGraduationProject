@@ -9,7 +9,7 @@ class NotifictionResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
     public function toArray($request)
@@ -20,6 +20,8 @@ class NotifictionResource extends JsonResource
             'sender_id' => $this->sender_id,
             'receiver_id' => $this->receiver_id,
             'type' => $this->type,
+            'sender_name' => $this->sender_name,
 
-        ];    }
+        ];
+    }
 }
