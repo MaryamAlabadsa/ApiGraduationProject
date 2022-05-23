@@ -31,16 +31,6 @@ class NotificationController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param \App\Http\Requests\StoreNotificationRequest $request
@@ -48,7 +38,10 @@ class NotificationController extends Controller
      */
     public function store(StoreNotificationRequest $request)
     {
-        //
+        sendnotification(adminToken()
+            , "laravel13", "loarem loarem loarem", ['post_id'=>2]);
+         return response()->json(['message' => $request->post_id]);
+
     }
 
     /**

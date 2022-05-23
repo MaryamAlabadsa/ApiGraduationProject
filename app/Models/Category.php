@@ -10,9 +10,14 @@ class Category extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'image'
     ];
     //one Category has many posts
     public function  posts(){
         return $this->hasMany(Post::class);
+    }
+
+    public function getImageLinkAttribute(){
+        return $this->image ? url('/storage/'.$this->image) : url("control_panel_style/images/faces/face1.jpg");
     }
 }

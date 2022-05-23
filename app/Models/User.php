@@ -60,7 +60,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function getImageLinkAttribute(){
-        return $this->img ? url('/storage/'.$this->img) : url("control_panel_style/images/faces/face1.jpg");
+        return $this->img ? url('/storage/'.$this->img) : url("control_panel_style/images/auth/user.jpg");
     }
 
     //one user has many notifications

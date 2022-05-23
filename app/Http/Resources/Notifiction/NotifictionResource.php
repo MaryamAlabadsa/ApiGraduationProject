@@ -21,6 +21,7 @@ class NotifictionResource extends JsonResource
             'receiver_id' => $this->receiver_id,
             'type' => $this->type,
             'sender_name' => $this->sender_name,
+            'sent_at' => $this->created_at->diffForHumans(now()),
 
         ];
     }

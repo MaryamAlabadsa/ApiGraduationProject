@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\auth;
 
 use App\Http\Resources\User\UserResource;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -27,11 +28,10 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'img' => $request->image->store('public', 'public'),
+//            'img' => $i->store('public', 'public'),
             'phone_number' => $request->phone_number,
             'address' => $request->address,
             'Longitude' => $request->Longitude,
@@ -39,15 +39,19 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
 
         ]);
-
-        //  $user->update(['img'=>$request->image->store('public', 'public')]);
-
-//        dd($user->image_link);
-
-        //  event(new Registered($user));
+        if ($request->image){
+            $user->update(['img'=>$request->image->store('public', 'public')]);
+        }
 
         $token = $user->createToken('authtoken');
-
+        sendnotification(adminToken()
+            , "new user registered", $user->name ." create new account", ['user_id'=>$user->id]);
+        Notification::create([
+            'post_id' => 0,
+            'sender_id' => $user->id,
+            'receiver_id' =>adminId(),
+            'type' => 'admin',
+        ]);
         return response()->json(
             [
                 'message' => 'User Registered',
@@ -67,7 +71,6 @@ class AuthController extends Controller
             $user->makeVisible('password');
             if (\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) { // true}else{//false}
                 $token = $user->createToken('authtoken');
-//        dd('kkk');
                 return response()->json(
                     [
                         'message' => 'Logged in baby',
@@ -117,8 +120,15 @@ class AuthController extends Controller
 
     public function updateUserImage(Request $request)
     {
-       Auth::user()->update(['img' => $request->image->store('public', 'public')]);
-        return ['message' => 'updated Successfully'];
+        $user = Auth::user()->update(['img' => $request->image->store('public', 'public')]);
+        return response()->json(
+            [
+                'message' => 'updated Successfully',
+                'data' => ['token' => null,
+                    'user' => UserResource::make(Auth::user()),
+                ]
+            ]
+        );
     }
 
 }

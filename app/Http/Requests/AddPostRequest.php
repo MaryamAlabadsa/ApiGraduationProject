@@ -22,8 +22,7 @@ class AddPostRequest extends FormRequest
             'title' => 'required|string',
             'description' => 'sometimes|required|string',
             'is_donation' => 'required|numeric|in:0,1',
-            'category_id' => 'required|numeric|exists:categories,id',
-//            'assets' => 'required|array',
+ //            'assets' => 'required|array',
 //            'assets.*' => 'required|mimes:jpg,png,jpeg',
         ];
     }

@@ -1,21 +1,7 @@
 <?php
-function sendnotification($to, $title, $message,$postId,$datapayload=[]){
- $msg = urlencode($message);
-    $data = array(
-        'title'=>$title,
-        'post_id'=>$postId,
-        'sound' => "default",
-        'msg'=>$msg,
-        'data'=>$datapayload,
-        'body'=>$message,
-        'color' => "#79bc64"
-    );
-    $fields = array(
-        'to'=>$to,
-        'notification'=>$data,
-//        'data'=>$datapayload,
-        "priority" => "high",
-    );
+function sendnotification($to, $title, $message,$datapayload=[]){
+    $fields  = array('to' => $to, 'notification' => array('title' => $title, 'body'=> $message),'data'=>$datapayload);
+
     $headers = array(
         'Authorization: key=AAAAuirINo8:APA91bEHZwhkfIMiyV_pZtuWSlQyKJsmkGsXC-TFx_XqVzDtmUaB-eXWKeTVdoLtDJm9LSMY-YFa3SsUKwCWXPgeWV7acknbV5wptcgt5LqrXynN-8r8KI5sJOe6BPy56qakVbbqGozl',
         'Content-Type: application/json'
@@ -31,4 +17,11 @@ function sendnotification($to, $title, $message,$postId,$datapayload=[]){
     $result = curl_exec($ch);
     curl_close( $ch );
 //    return $result;
+}
+function adminToken(){
+    $adminToken=\App\Models\User::where('id',32)->first()->fcm_token;
+    return $adminToken;
+}
+function adminId(){
+    return 32;
 }

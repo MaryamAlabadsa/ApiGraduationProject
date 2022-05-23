@@ -25,10 +25,10 @@ class PostRequest extends FormRequest
     public function rules()
     {
         return [
-//            'title' => 'required|string',
-//            'description' => 'required|string',
-//            'is_donation' => 'required|numeric|in:0,1',
-//            'category_id' => 'required|numeric|exists:categories,id',
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'is_donation' => 'required|numeric|in:0,1',
+            'category_id' => 'required|numeric|exists:categories,id',
 
         ];
     }

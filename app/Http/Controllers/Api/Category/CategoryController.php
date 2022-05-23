@@ -39,6 +39,7 @@ class CategoryController extends Controller
         ]);
         $category = Category::create([
             'name' => $request->name,
+            'image' => $request->image->store('public', 'public'),
         ]);
 
         return response()->json(

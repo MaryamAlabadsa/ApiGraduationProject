@@ -66,14 +66,14 @@ class ProfileController extends Controller
     public function getUserProfileInfo($id)
     {
         $user = User::where('id', $id)->first();
+
         $user_image = $user->img ? url('/storage/' . $user->img) : url("control_panel_style/images/faces/face1.jpg");
-dd($this->DonationPosts($id));
         return response()->json(
             [
                 'message' => 'returned successfully',
                 'data' => [
                     'user_image' => $user_image,
-                    'user_name' =>$user->name,
+                    'user_name' => $user->name,
                     'num_donation_post' => count($this->DonationPosts($id)),
                     'num_request_post' => count($this->RequestPosts($id)),
                 ]
@@ -93,9 +93,8 @@ dd($this->DonationPosts($id));
                 'message' => 'returned successfully',
                 'data' => [
                     'user_image' => $user_image,
-                    'user_name' =>Auth::user()->name,
-//                    User::select('name')->where('id', $userId)->first(),
-                        'num_donation_post' => count($this->DonationPosts($userId)),
+                    'user_name' => Auth::user()->name,
+                    'num_donation_post' => count($this->DonationPosts($userId)),
                     'num_request_post' => count($this->RequestPosts($userId)),
                 ]
             ]
@@ -106,9 +105,7 @@ dd($this->DonationPosts($id));
     {
         $posts = Post::where([['is_donation', '=', 1], ['first_user', '=', $userId]
         ])->get();
-        $orders = Order::whereIn('post_id', Post::select('id')->where([['is_donation', '=', 0]
-            , ['first_user', '=', $userId]
-        ])->get())->get();
+        $orders = Order::where([['post_id','=', Post::select('id')->where('is_donation', 0)->get()],['user_id','=',$userId]])->get();
         $all_data = $orders->merge($posts);
         $all_sorted_data = $all_data->sortByDesc('created_at');
         $data = array();
@@ -123,9 +120,8 @@ dd($this->DonationPosts($id));
         $posts = Post::where([['is_donation', '=', 0]
             , ['first_user', '=', $userId]
         ])->get();
-        $orders = Order::whereIn('post_id', Post::select('id')->where([['is_donation', '=', 1]
-            , ['first_user', '=', $userId]
-        ])->get())->get();
+        $orders = Order::where([['post_id','=', Post::select('id')->where('is_donation', 1)->get()],['user_id','=',$userId]])->get();
+
 //        dd($orders);
         $all_data = $orders->merge($posts);
         $all_sorted_data = $all_data->sortByDesc('created_at');

@@ -25,6 +25,7 @@ class OrderResource extends JsonResource
             'user_image' => $this->user_image_link,
             'created_at' => $this->created_at,
             'user_phone_number' => $this->user?$this->user->phone_number:"0",
+            'published_at' => $this->created_at->diffForHumans(now()),
 
         ];
     }

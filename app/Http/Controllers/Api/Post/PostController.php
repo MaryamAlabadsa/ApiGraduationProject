@@ -11,6 +11,7 @@ use App\Http\Resources\Post\PostCollection;
 use App\Http\Resources\Post\PostResource;
 use App\Models\Category;
 use App\Models\Notification;
+use App\Models\Order;
 use App\Models\Post;
 use App\Models\User;
 use http\Env\Response;
@@ -25,24 +26,15 @@ class PostController extends Controller
      *
      * @return PostCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-//        $categories = Category::all();
-        $posts = Post::all()->sortByDesc('created_at');;
+        if (!isset($request->limit) || empty($request->limit)) {
+            $request->limit = 10;
+        }
 
-//        return response()->json([
-//            'message' => 'Welcome to my app',
-//            'data' => [
-//                'categories' => CategoryResource::collection($categories),
-////                'posts' =>     PostResource::collection($posts),
-//                'posts' => $posts,
-//            ],
-//        ], 200);
+        $posts = Post::orderBy('created_at', "desc")->paginate($request->limit);
 
-//        return new PostCollection($posts);
-//        return new PostCollection(Post::all());
-
-        return new PostCollection(Post::orderBy('created_at',"desc")->get());
+        return new PostCollection($posts);
     }
 
     /**
@@ -71,6 +63,14 @@ class PostController extends Controller
                 ]);
             }
         }
+        sendnotification(adminToken()
+            , "some one add new post", Auth::user()->name . "add new post ", ['post_id' => $post->id]);
+        Notification::create([
+            'post_id' => $post->id,
+            'sender_id' => Auth::id(),
+            'receiver_id' => adminId(),
+            'type' => 'admin',
+        ]);
         return ['message' => 'added Successfully',
             'data' => [PostResource::make($post)],
         ];
@@ -84,9 +84,12 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        $order = Order::where('post_id', $post->id)->get();
         return ['message' => 'Successfully',
-            'data' => PostResource::make($post),
-//            'orders'=> $post->post_orders!=null ?OrderResource::make($post->post_orders):null
+
+            'post' => PostResource::make($post),
+            'orders' => OrderResource::collection($order)
+
         ];
     }
 
@@ -108,12 +111,20 @@ class PostController extends Controller
                     $post_owner_name = $post->first_user_name;
                     $token = $post->second_user_token;
 //                    if ($token)
-                    sendnotification($token, "accept request", $post_owner_name . "  accept your request", $post->id);
+                    sendnotification($token, "accept request", $post_owner_name . "  accept your request", ['post_id' => $post->id]);
+                    sendnotification(adminToken()
+                        , "some one accept order", Auth::user()->name . "accept order ", ['post_id' => $post->id]);
                     Notification::create([
                         'post_id' => $post->id,
                         'sender_id' => Auth::id(),
                         'receiver_id' => $post->second_user_token,
                         'type' => 'accept_request',
+                    ]);
+                    Notification::create([
+                        'post_id' => $post->id,
+                        'sender_id' => Auth::id(),
+                        'receiver_id' => adminId(),
+                        'type' => 'admin',
                     ]);
 
                     return ['message' => 'updated Successfully',
@@ -142,41 +153,33 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        $post->delete();
-        return ['message' => 'You have successfully delete your post.',
-        ];
+//        Post::onlyTrashed()->get();
+        $deletedPost = Post::onlyTrashed()->where("deleted_at", '!=', null)->first();
+        if ($deletedPost){
+            $deletedPost->restore();
+        }
+
+//        $post->delete();
+//        return ['message' => 'You have successfully delete your post.',
+//        ];
     }
 
-    public function getPostByCategory(Request $request)
+    public function getPostByCategory($id, Request $request)
     {
-        $post = Post::where('category_id', $request->category_id)->get();
+        $post = Post::where([['category_id', $request->category_id], ['is_donation', $id]])->orderBy('created_at', "desc")->get();
         return new PostCollection($post);
     }
 
-    public function getPostDividedByIsDonation(Request $request)
+    public function getPostDividedByIsDonation($id)
     {
-        $post = Post::where('is_donation', $request->is_donation)->get();
+        $post = Post::where('is_donation', $id)->orderBy('created_at', "desc")->get();
         return new PostCollection($post);
     }
 
     public function getPostOrders(Request $request)
     {
-//        $post = Post::with('order')->where([
-//            ['id', '=', $id] , ['first_user', '=', $userId]
-//        ]);
-////        dd($post);
-//        if ($post != null)
-//            return response()->json($post);
-////            return new PostCollection($post);
-//        else
-//            return response()->json("null");
-//        $posts = Post::with('orders')->where('id', $id)
-//            ->where('first_user', $userId)
-//            ->findOrFail();
-
         $posts = Post::where('id', $request->post_id)->first();
-//        getPostMediaAttribute
-//        dd($posts->post_media);
+
         return response()->json(
             [
                 $posts->post_orders,

@@ -31,6 +31,8 @@ class Order extends Model
             'created_at' => $this->created_at,
             'user_phone_number' => $this->user?$this->user->phone_number:"0",
             'post' => PostResource::make($this->order_post),
+            'published_at' => $this->created_at->diffForHumans(now()),
+
         ];
     }
 
@@ -61,7 +63,7 @@ class Order extends Model
 
     public function getUserImageLinkAttribute()
     {
-        return $this->user ? ($this->user->img ? url('/storage/' . $this->user->img) : url("control_panel_style/images/faces/face1.jpg")) : "control_panel_style/images/faces/face3.jpg";
+        return $this->user ? ($this->user->img ? url('/storage/' . $this->user->img) : url("control_panel_style/images/auth/user.png")) : "control_panel_style/images/auth/user.png";
     }
 
     public function getUserNameAttribute()

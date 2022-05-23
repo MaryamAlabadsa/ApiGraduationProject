@@ -5,14 +5,16 @@ namespace App\Models;
 use App\Http\Resources\Order\OrderResource;
 use App\Http\UtcDateTime;
 use Database\Factories\UserFactory;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
 class Post extends Model
 {
 
-    use HasFactory;
+    use HasFactory , SoftDeletes;
 
 //    protected $appends = [ 'post_first_user', 'post_second_user', 'post_first_user_email', 'post_second_user_email'];
     protected $fillable = [
@@ -49,9 +51,10 @@ class Post extends Model
             'post_media' => $this->post_media,
             'first_user_image_link' => $this->first_user_image_link,
             'is_ordered' => $this->is_ordered != false ? true : false,
-            'Order_id' => $this->is_ordered != false ? ($this->order->id ): 0,
+            'Order_id' => $this->is_ordered == true ? $this->is_ordered->id: 0,
             'is_he_the_owner_of_the_post' => $this->first_user===Auth::id()?true:false,
             'is_completed' => $this->second_user===null?false:true,
+            'published_at' => $this->created_at->diffForHumans(now()),
 
         ];
     }
@@ -62,7 +65,7 @@ class Post extends Model
 
     public function getPostOrdersAttribute()
     {
-        return $this->orders != null ? $this->orders : null;
+        return $this->orders ? $this->orders : 'orders not found';
     }
 
 
@@ -125,12 +128,12 @@ class Post extends Model
 
     public function getFirstUserImageLinkAttribute()
     {
-        return $this->user ? ($this->user->img ? url('/storage/' . $this->user->img) : url("control_panel_style/images/faces/face1.jpg")) : "control_panel_style/images/faces/face3.jpg";
+        return $this->user ? ($this->user->img ? url('/storage/' . $this->user->img) : url("control_panel_style/images/auth/user.png")) : "control_panel_style/images/auth/user.png";
     }
 
     public function getSecondUserImageLinkAttribute()
     {
-        return $this->second_user_data ? ($this->second_user_data->img ? url('/storage/' . $this->second_user_data->img) : url("control_panel_style/images/faces/face1.jpg")) : "control_panel_style/images/faces/face3.jpg";
+        return $this->second_user_data ? ($this->second_user_data->img ? url('/storage/' . $this->second_user_data->img) : url("control_panel_style/images/auth/user.png")) : "control_panel_style/images/auth/user.png";
 
     }
 

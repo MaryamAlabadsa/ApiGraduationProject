@@ -37,11 +37,7 @@ class PostResource extends JsonResource
             'Order_id' => $this->is_ordered == true ? $this->is_ordered->id: 0,
             'is_he_the_owner_of_the_post' => $this->first_user===Auth::id()?true:false,
             'is_completed' => $this->second_user===null?false:true,
-
-//            'is_ordered' => $this->is_ordered != false ? OrderResource::make($this->is_ordered) : false,
-//            'orders' => $this->post_orders==null   ?'empty':$this->post_orders,
-//            'orders' => $this->post_orders!='orders not found'?OrderResource::make($this->post_orders):false,
-//            'orders' => new OrderResource($this->post_orders),
+            'published_at' => $this->created_at->diffForHumans(now()),
         ];
     }
 }

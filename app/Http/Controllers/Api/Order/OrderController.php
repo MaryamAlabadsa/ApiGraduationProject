@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Order;
 
+use App\Events\AddOrder;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderRequest;
 use App\Http\Resources\Order\OrderCollection;
@@ -34,14 +35,12 @@ class OrderController extends Controller
      */
     public function store(OrderRequest $request)
     {
-        $token = Post::where('id', $request->post_id)->first()->first_user_token;
-//        $token = Post::where('id', $request->post_id)->first()->first_user_token;
         $order = Order::create([
             'massage' => $request->massage,
             'post_id' => $request->post_id,
             'user_id' => Auth::id(),
         ]);
-//        if ($token)
+        $token = Post::where('id', $request->post_id)->first()->first_user_token;
 
         Notification::create([
             'post_id' => $request->post_id,
@@ -49,7 +48,15 @@ class OrderController extends Controller
             'receiver_id' => Post::where('id', $request->post_id)->first()->first_user,
             'type' => 'add_request',
         ]);
-        sendnotification($token, 'add new request', Auth::user()->getAuthIdentifierName() .' send you request',$request->post_id);
+        sendnotification($token, 'add new request', Auth::user()->getAuthIdentifierName() .' send you request',['post_id'=>$request->post_id]);
+        Notification::create([
+            'post_id' => $request->post_id,
+            'sender_id' => Auth::id(),
+            'receiver_id' =>adminId(),
+            'type' => 'admin',
+        ]);
+        sendnotification(adminToken()
+            , "some one add new order", Auth::user()->name ."add new order ", ['post_id'=>$request->post_id]);
 
         return ['message' => 'added Successfully',
             'data' => OrderResource::make($order),
