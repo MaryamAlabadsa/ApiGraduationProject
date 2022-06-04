@@ -39,19 +39,20 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
 
         ]);
-        if ($request->image){
-            $user->update(['img'=>$request->image->store('public', 'public')]);
+        if ($request->image) {
+            $user->update(['img' => $request->image->store('public', 'public')]);
         }
 
         $token = $user->createToken('authtoken');
         sendnotification(adminToken()
-            , "new user registered", $user->name ." create new account", ['user_id'=>$user->id]);
+            , "new user registered", $user->name . " create new account", ['user_id' => $user->id]);
         Notification::create([
             'post_id' => 0,
             'sender_id' => $user->id,
-            'receiver_id' =>adminId(),
+            'receiver_id' => adminId(),
             'type' => 'admin',
         ]);
+        $user->update(['fcm_token'=>$request->fcm_token]);
         return response()->json(
             [
                 'message' => 'User Registered',
@@ -71,6 +72,7 @@ class AuthController extends Controller
             $user->makeVisible('password');
             if (\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) { // true}else{//false}
                 $token = $user->createToken('authtoken');
+                $user->update(['fcm_token'=>$request->fcm_token]);
                 return response()->json(
                     [
                         'message' => 'Logged in baby',
@@ -109,6 +111,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
+        $request->user()->update(['fcm_token'=>null]);
 
         return response()->json(
             [
@@ -121,6 +124,19 @@ class AuthController extends Controller
     public function updateUserImage(Request $request)
     {
         $user = Auth::user()->update(['img' => $request->image->store('public', 'public')]);
+        return response()->json(
+            [
+                'message' => 'updated Successfully',
+                'data' => ['token' => null,
+                    'user' => UserResource::make(Auth::user()),
+                ]
+            ]
+        );
+    }
+
+    public function updateUserName(Request $request)
+    {
+        $user = Auth::user()->update(['name' => $request->name]);
         return response()->json(
             [
                 'message' => 'updated Successfully',

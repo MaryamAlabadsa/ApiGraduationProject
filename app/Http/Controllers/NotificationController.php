@@ -19,10 +19,21 @@ class NotificationController extends Controller
     public function index()
     {
         $user = Auth::id();
-        $notif = Notification::
-        where('receiver_id', $user)
-//            ->groupBy('post_id')
-            ->orderBy('created_at', "desc")->get();
+//        $notif = Notification::
+//        where('receiver_id', $user)
+//            ->orderBy('created_at', "desc")
+//            ->get()
+//            ->groupBy('post_id');
+
+
+        $notif = Notification::selectRaw('post_id,created_at,id,sender_id,type,receiver_id')
+            ->where('receiver_id', $user)
+            ->groupBy('post_id', 'created_at', 'id', 'sender_id', 'type', 'receiver_id')
+            ->orderByDesc('created_at')
+            ->get();
+
+//        return response()->json(['message' => 'success', 'data' => $mostFaved]);
+//
         return
             [
                 'message' => 'done',
@@ -39,8 +50,8 @@ class NotificationController extends Controller
     public function store(StoreNotificationRequest $request)
     {
         sendnotification(adminToken()
-            , "laravel13", "loarem loarem loarem", ['post_id'=>2]);
-         return response()->json(['message' => $request->post_id]);
+            , "laravel13", "loarem loarem loarem", ['post_id' => 2]);
+        return response()->json(['message' => $request->post_id]);
 
     }
 

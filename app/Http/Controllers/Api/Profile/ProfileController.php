@@ -67,7 +67,7 @@ class ProfileController extends Controller
     {
         $user = User::where('id', $id)->first();
 
-        $user_image = $user->img ? url('/storage/' . $user->img) : url("control_panel_style/images/faces/face1.jpg");
+        $user_image = $user->img ? url('/storage/' . $user->img) : url("control_panel_style/images/auth/user.png");
         return response()->json(
             [
                 'message' => 'returned successfully',
@@ -86,7 +86,7 @@ class ProfileController extends Controller
         $userId = Auth::id();
 
         $user = User::where('id', $userId)->first();
-        $user_image = $user->img ? url('/storage/' . $user->img) : url("control_panel_style/images/faces/face1.jpg");
+        $user_image = $user->img ? url('/storage/' . $user->img) : url("control_panel_style/images/auth/user.png");
 
         return response()->json(
             [
@@ -105,7 +105,7 @@ class ProfileController extends Controller
     {
         $posts = Post::where([['is_donation', '=', 1], ['first_user', '=', $userId]
         ])->get();
-        $orders = Order::where([['post_id','=', Post::select('id')->where('is_donation', 0)->get()],['user_id','=',$userId]])->get();
+        $orders = Order::whereIn('post_id', Post::select('id')->where('is_donation', 0)->get())->where('user_id', $userId)->get();
         $all_data = $orders->merge($posts);
         $all_sorted_data = $all_data->sortByDesc('created_at');
         $data = array();
@@ -120,7 +120,7 @@ class ProfileController extends Controller
         $posts = Post::where([['is_donation', '=', 0]
             , ['first_user', '=', $userId]
         ])->get();
-        $orders = Order::where([['post_id','=', Post::select('id')->where('is_donation', 1)->get()],['user_id','=',$userId]])->get();
+        $orders = Order::whereIn('post_id', Post::select('id')->where('is_donation', 1)->get())->where('user_id', $userId)->get();
 
 //        dd($orders);
         $all_data = $orders->merge($posts);

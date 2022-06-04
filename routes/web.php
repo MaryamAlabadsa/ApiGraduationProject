@@ -1,86 +1,28 @@
 <?php
-use App\Http\Controllers\ControlPanel\PostController;
-use App\Models\Post;
-use App\Models\User;
+
 use Illuminate\Support\Facades\Route;
 
-Route::get('/clear-cache', function() {
-    Artisan::call('cache:clear');
-    Artisan::call('route:clear');
-    Artisan::call('config:clear');
-    Artisan::call('view:clear');
-    dd("ASDASD");
-    return "Cache is cleared";
-});
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
 Route::get('/', function () {
-    $posts = Post::all();
-    return view('control_panel.post.all_post',['posts'=>$posts]);
-});
-Route::get('/posts/{id}',[\App\Http\Controllers\PostController::class,'show']);
-
-
-//Route::resource('users', \App\Http\Controllers\control_panel\UserController::class);
-
-//Route::get('/',[\App\Http\Controllers\PostController::class,'index']);
-
-//user
-//Route::get('users',[\App\Http\Controllers\PostController::class]);
-Route::get('create_user', function () {
-    return view('control_panel.user.create_user');
-});
-Route::get('login', function () {
-    return view('control_panel.user.login');
-});
-Route::get('register', function () {
-    return view('control_panel.user.register');
-});
-//profile
-Route::get('profile', function () {
-    return view('control_panel.user.profile');
+    return redirect(route('login'));
 });
 
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
+require __DIR__.'/auth.php';
 
-
-
-
-
-
-
-
-
-
-Route::get('post', function () {
-    $posts=Post::all();
-    return view('control_panel.post.all_post',['posts'=>$posts]);
-});
-Route::get('post-details', function () {
-//    $posts=Post::all();
-    return view('control_panel.post.post-details');//,['posts'=>$posts]);
-});
-
-
-
-
-
-
-
-Route::get('/users', function () {
-
-    $users = User::all();
-    return view('control_panel.user.users',['users'=>$users]);
-});
-Route::get('/user/{id}', function ($id) {
-    $user = User::where('id',$id)->first();
-    return view('control_panel.user.profile',['user'=>$user]);
-});
-
-
-
-
-
-
-
-
-
+Route::resource('posts',\App\Http\Controllers\control_panel\PostController::class);
+Route::get('/getPostsData', [\App\Http\Controllers\control_panel\PostController ::class,'getData'])->name('Posts.getData');
 

@@ -18,7 +18,7 @@ class CategoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => ucfirst($this->name),
             'image' => $this->image_link,
         ];
     }

@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\auth\AuthController;
-use App\Http\Requests\AddPostRequest;
+use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -33,6 +33,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('myRequestsPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getMyRequestPosts']);
     Route::post('UserDonationPosts/{id}', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getUserDonationPosts']);
     Route::post('UserRequestPosts/{id}', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getUserRequestPosts']);
+    Route::post('UpdateUserName', [AuthController::class, 'updateUserName']);
 
 
 
@@ -42,7 +43,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     //log out
     Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('changePassword', [NewPasswordController::class, 'changePassword']);
+    Route::post('changePassword', [NewPasswordController::class, 'changePasswo      rd']);
     Route::post('updateUserImage', [AuthController::class, 'updateUserImage']);
     Route::get("sendDeviceToken/{token}", function ($token) {
         Illuminate\Support\Facades\Auth::user()->update(['fcm_token'=>$token]);

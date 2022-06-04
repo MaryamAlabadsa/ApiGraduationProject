@@ -20,4 +20,7 @@ class Category extends Model
     public function getImageLinkAttribute(){
         return $this->image ? url('/storage/'.$this->image) : url("control_panel_style/images/faces/face1.jpg");
     }
+//    public function getNameAttribute(){
+//        return ucfirst($this->name);
+//    }
 }

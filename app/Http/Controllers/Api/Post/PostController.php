@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Post;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AddPostRequest;
+use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\PostRequest;
 use App\Http\Resources\Category\CategoryResource;
 use App\Http\Resources\Order\OrderResource;
@@ -43,7 +43,7 @@ class PostController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return array
      */
-    public function store(AddPostRequest $request)
+    public function store(StorePostRequest $request)
     {
 
         $post = Post::create([
@@ -170,9 +170,14 @@ class PostController extends Controller
         return new PostCollection($post);
     }
 
-    public function getPostDividedByIsDonation($id)
+    public function getPostDividedByIsDonation($id,Request $request)
     {
-        $post = Post::where('is_donation', $id)->orderBy('created_at', "desc")->get();
+        if (!isset($request->limit) || empty($request->limit)) {
+            $request->limit = 10;
+        }
+
+
+        $post = Post::where('is_donation', $id)->orderBy('created_at', "desc")->paginate($request->limit);
         return new PostCollection($post);
     }
 

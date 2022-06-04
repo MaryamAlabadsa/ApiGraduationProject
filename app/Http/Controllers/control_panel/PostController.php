@@ -3,94 +3,170 @@
 namespace App\Http\Controllers\control_panel;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Order;
 use App\Models\Post;
-use App\Models\User;
+use App\Http\Requests\StorePostRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
 class PostController extends Controller
 {
-    public  function index(){
-        $posts = Post::all();
-//        $posts = DB::table('posts')->paginate(20);
-        return view('control_panel.post.post',['posts'=>$posts]);
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $Posts = Post::all();
+        return view('Post.index', compact('Posts'));
     }
-    public  function show($id){
-        $post = Post::where('id',$id)->first();
-        return view('post.show_post',['post'=>$post]);
+    public function getData(Request $request)
+    {
+//        dd($areas);
+        $columns = array(
+
+            array( 'db' => 'userName',          'dt' => 1 ),
+            array( 'db' => 'postTitle',   'dt' => 2 ),
+            array( 'db' => 'categoryName',         'dt' => 3 ),
+//            array( 'db' => 'description',   'dt' => 4 )
+        );
+
+        $draw = (int)$request->draw;
+        $start = (int)$request->start;
+        $length = (int)$request->length;
+        $order = $request->order[0]["column"];
+        $direction = $request->order[0]["dir"];
+        $search = trim($request->search["value"]);
+
+
+        $value = array();
+
+        if(!empty($search)){
+            $count = Post::search($search)
+                ->count();
+            $items = Post::search($search)
+                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                ->get();
+        } else {
+            $count = Post::count();
+            $items = Post::
+            limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                ->get();
+        }
+        foreach ($items as $index => $item){
+//            dd($item->unPaidMaterials);
+            array_push($value , $item->Post_display_data);
+        }
+        return [
+            "draw" => $draw,
+            "recordsTotal" => $count,
+            "recordsFiltered" => $count,
+            "data" => (array)$value,
+            "order" => $columns[$order]["db"]
+        ];
+//        return $areas;
     }
-    public  function create(){
-        return view('post.addPost');
-    }
-    public  function  store(){
-//        $post = new Post();
-//        $attributes = request()-> validate([
-//            'title'=>'required',
-//            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-//            'slug'=>['required',Rule::unique('posts','slug')],
-//            'excerpt'=>'required',
-//            'body'=>'required',
-//            'category_id'=>['Required',Rule::exists('category','id')]
-//
-//        ]);
-//        $attributes ['user_id'] = Auth::id();
-//        if (isset($attributes['image'])){
-//            $attributes['image'] = request()->file('image')->store('images');
-//        }
-//        $post->save($attributes);
-        $post = new Post();
-        $post ->user_id =Auth::id();
-        $post->title = request('title');
-        $post->excerpt = request('excerpt');
-        $post->slug = request('slug');
-        $post->body = request('body');
-        $post->category_id = request('category');
-        $post->image = request()->file('image')->store('images');
-        $post->save();
-        return redirect('/')
-            ->with('success','You have successfully add post.');
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function create()
+    {
+        $posts = new Post();
+        $category = Category::all();
+        return response()->json(['view'=>view('Post.create',compact('posts','category'))->render(),'Post_id'=>$posts->id]);
 
     }
-    function  deletePost($id){
-        $post = Post::where('id',$id)->first();
-        $post ->delete();
-        return redirect('/')
-            ->with('success','You have successfully delete post.');
-    }
-    public  function edit($id){
-        $post = Post::where('id',$id)->first();
-        return view('post.editPost',['post'=>$post]);
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StorePostRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(StorePostRequest $request)
+    {
+        $Post = Post::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'price' => $request->price,
+        ]);
+
+        if ($request->hasFile('assets')) {
+            $Post->update(['image' => $request->image->store('public', 'public')]);
+        }
+//        Post::create($request->all());
+        return response()->json(['msg'=>'new Post data is created successfully','type'=>'success','title'=>'Create']);
     }
 
-    public  function  editPost($id){
-        $post = Post::where('id',$id)->first();
-        $post->title = request('title');
-        $post->excerpt = request('excerpt');
-        $post->slug = request('slug');
-        $post->body = request('body');
-        $post->category_id = request('category');
-//        if (isset($post['image'])){
-           $post->image = request()->file('image')->store('images');
-//        }
-        $post->update();
-        return redirect('/')
-            ->with('success','You have successfully edit post.');
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Post  $prodect
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Post $prodect)
+    {
 
     }
-    public  function  search(){
-        $txtSearch = request('search');
-        $posts = Post::query()
-            ->where('title','Like',"%{$txtSearch}%")
-            ->orwhere('slug','Like',"%{$txtSearch}%")
-            ->orwhere('body','LIKE',"%{$txtSearch}%")->get();
-        return view('post.posts',['posts'=>$posts]);
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Post  $prodect
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function edit(Post $Post)
+    {
+        $categories = Category::all();
+        return response()->json(['view'=>view('Post.update',compact('Post','categories'))->render(),'Post_id'=>$Post->id]);
+
     }
-    public  function showMyPost(){
-        $userId = Auth::id();
-        $posts = Post::where('user_id',$userId)->get();
-//        $user = User::where('id',$userId)->First();
-//        $posts = $user->posts;
-        return view('post.my-posts',['posts'=>$posts]);
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\UpdatePostRequest  $request
+     * @param  \App\Models\Post  $prodect
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(UpdatePostRequest $request, Post $Post)
+    {
+        $Post->name = $request->input('name');
+           $Post->description = $request->input('description');
+           $Post->category_id = $request->input('category_id');
+           $Post->price = $request->input('price');
+//        'past_medical_history_id'=>isset($request->past_medical_history_id) ? $request->past_medical_history_id : null,
+
+           $Post->save();
+        return response()->json(['msg'=>'a Post data is updated successfully','type'=>'success','title'=>'Update']);
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Post  $Post
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(Post $Post)
+    {
+        $Post->delete();
+        return response()->json(['msg'=>'a Post data is deleted successfully','type'=>'success','title'=>'Delete']);
+
+    }
+    public function ShowOrders(Post $posts)
+    {
+        $orders = Order::where('post_id', $posts->id)->get();
+
+        return response()->json(['view'=>view('Post.showOrders',compact('posts','orders'))->render(),'Post_id'=>$posts->id]);
+    }
+    public function showImages(Post $posts)
+    {
+        return response()->json(['view'=>view('Post.showPostImages',compact('posts',))->render(),'Post_id'=>$posts->id]);
+    }
+
 }

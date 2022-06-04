@@ -53,8 +53,8 @@ class Post extends Model
             'is_ordered' => $this->is_ordered != false ? true : false,
             'Order_id' => $this->is_ordered == true ? $this->is_ordered->id: 0,
             'is_he_the_owner_of_the_post' => $this->first_user===Auth::id()?true:false,
-            'is_completed' => $this->second_user===null?false:true,
-            'published_at' => $this->created_at->diffForHumans(now()),
+            'is_completed' =>$this->is_completed ,
+            'published_at' =>$this->published_at ,
 
         ];
     }
@@ -63,9 +63,50 @@ class Post extends Model
         'is_donation' => 'boolean',
     ];
 
+    //controll panel
+    public function getPostDisplayDataAttribute(){
+        return [
+            'userImage'=>'<img src="'.$this->first_user_image_link.'"/>',
+            'userName'=>$this->first_user_name,
+            'postTitle'=>$this->title,
+            'categoryName'=>$this->price,
+            'RequestNumber'=>$this->number_of_requests,
+            'postedAt'=>$this->published_at,
+            'isDonation'=>$this->is_donation,
+            'isAvailable'=>$this->is_completed,
+            'tools'=>$this->show_post_images.'&nbsp'.$this->show_orders
+        ];
+    }
+
+    public function scopeSearch($query,$searchWord)
+    {
+        return $query->where('id', 'like', "%" . $searchWord . "%")
+            ->orWhere('name', 'like', "%" . $searchWord . "%")
+            ->orWhere('userName', 'like', "%" . $searchWord . "%")
+            ->orWhereHas('category',function($query) use($searchWord){
+                $query->where('name', 'like', "%" . $searchWord . "%");
+            });
+    }
+    public function getShowOrdersAttribute(){
+        return '<button type="button" class="btn btn-info" data-toggle="tooltip" data-placement="top" rel="tooltip" title=" '.$this->number_of_requests.'" onclick="ShowOrders(\''.route('posts.ShowOrders',$this->id).'\',this)"><i class="bi bi-list-ul"></i></button>';
+    }
+    public function getShowPostImagesAttribute(){
+        return '<button type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="top" rel="tooltip" title="showImages '.$this->name.'" onclick="showImages(\''.route('posts.showImages',$this->id).'\')"><i class="bi bi-images"></i></button>';
+    }
+
+
+//Api
     public function getPostOrdersAttribute()
     {
         return $this->orders ? $this->orders : 'orders not found';
+    }
+    public function getPublishedAtAttribute()
+    {
+        return $this->created_at->diffForHumans(now());
+    }
+    public function getIsCompletedAttribute()
+    {
+        return $this->second_user===null?false:true;
     }
 
 
