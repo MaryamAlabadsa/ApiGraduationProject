@@ -32,8 +32,6 @@ class NotificationController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-//        return response()->json(['message' => 'success', 'data' => $mostFaved]);
-//
         return
             [
                 'message' => 'done',
@@ -49,9 +47,8 @@ class NotificationController extends Controller
      */
     public function store(StoreNotificationRequest $request)
     {
-        sendnotification(adminToken()
-            , "laravel13", "loarem loarem loarem", ['post_id' => 2]);
-        return response()->json(['message' => $request->post_id]);
+        sendnotification(adminToken(), "laravel13", "loarem loarem loarem", ['post_id' => 2]);
+        return response()->json(['message' => '$request->post_id']);
 
     }
 

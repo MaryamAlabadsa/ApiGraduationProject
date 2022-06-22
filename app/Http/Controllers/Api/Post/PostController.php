@@ -153,31 +153,44 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-//        Post::onlyTrashed()->get();
-        $deletedPost = Post::onlyTrashed()->where("deleted_at", '!=', null)->first();
-        if ($deletedPost){
-            $deletedPost->restore();
-        }
-
-//        $post->delete();
-//        return ['message' => 'You have successfully delete your post.',
-//        ];
+        $user = Auth::id();
+        if ($post->user_id == $user) {
+            $post->delete();
+            return ['message' => 'You have successfully delete your post.'];
+        } else
+            return ['message' => 'You can not delete this post.'];
     }
+
+    public function restorePost($id)
+    {
+        $deletePost = Post::onlyTrashed()->where([["deleted_at", '!=', null], ['id', '=', $id]])->first();
+        if ($deletePost) {
+            $deletePost->restore();
+            return ['message' => 'You have successfully restore your post.'];
+
+        }
+        return ['message' => 'You can not restore this order.'];
+
+    }
+
 
     public function getPostByCategory($id, Request $request)
-    {
-        $post = Post::where([['category_id', $request->category_id], ['is_donation', $id]])->orderBy('created_at', "desc")->get();
-        return new PostCollection($post);
-    }
-
-    public function getPostDividedByIsDonation($id,Request $request)
     {
         if (!isset($request->limit) || empty($request->limit)) {
             $request->limit = 10;
         }
+        $post = Post::postcategory($request->category_id)->donation($id)->status($request->postStatus)
+            ->orderBy('created_at', "desc")->paginate($request->limit);
+        return new PostCollection($post);
+    }
 
+    public function getPostDividedByIsDonation($id, Request $request)
+    {
+        if (!isset($request->limit) || empty($request->limit)) {
+            $request->limit = 10;
+        }
+        $post = Post::donation($id)->status($request->postStatus)->orderBy('created_at', "desc")->paginate($request->limit);
 
-        $post = Post::where('is_donation', $id)->orderBy('created_at', "desc")->paginate($request->limit);
         return new PostCollection($post);
     }
 
@@ -191,6 +204,16 @@ class PostController extends Controller
                 new PostResource($posts)
             ]
         );
+
+    }
+
+    public function scopeSearchPostData(Request $request)
+    {
+        if (!isset($request->limit) || empty($request->limit)) {
+            $request->limit = 10;
+        }
+        $post = Post::donation($request->is_donation)->status($request->status)->postcategory($request->category)->data($request->data)->orderBy('created_at', "desc")->paginate($request->limit);
+        return new PostCollection($post);
 
     }
 }

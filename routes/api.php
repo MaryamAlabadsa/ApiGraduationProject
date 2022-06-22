@@ -28,6 +28,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('PostOrders', [\App\Http\Controllers\Api\Order\OrderController::class, 'getPostOrders']);
     Route::post('PostByCategory/{id}', [\App\Http\Controllers\Api\Post\PostController::class, 'getPostByCategory']);
     Route::post('PostDividedByIsDonation/{id}', [\App\Http\Controllers\Api\Post\PostController::class, 'getPostDividedByIsDonation']);
+    Route::post('/restorePost/{id}', [\App\Http\Controllers\Api\Post\PostController::class, 'restorePost']);
+    Route::post('/restoreOrder/{id}', [\App\Http\Controllers\Api\Order\OrderController::class, 'restoreOrder']);
+    Route::post('/searchPost', [\App\Http\Controllers\Api\Post\PostController::class, 'scopeSearchPostData']);
 
     Route::post('myDonationPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getMyDonationPosts']);
     Route::post('myRequestsPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getMyRequestPosts']);
@@ -50,11 +53,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return ['message' => 'updated Successfully'];
     });
     Route::get('notification', [\App\Http\Controllers\NotificationController::class, 'index']);
-    Route::post('storeNotification', [\App\Http\Controllers\NotificationController::class, 'store']);
 
 
 });
 
+Route::post('storeNotification', [\App\Http\Controllers\NotificationController::class, 'store']);
 
 
 Route::get('getAllMedias', [\App\Http\Controllers\Api\Media\MediaController::class, 'getAllMedias']);

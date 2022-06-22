@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 class Post extends Model
 {
 
-    use HasFactory , SoftDeletes;
+    use HasFactory, SoftDeletes;
 
 //    protected $appends = [ 'post_first_user', 'post_second_user', 'post_first_user_email', 'post_second_user_email'];
     protected $fillable = [
@@ -41,7 +41,7 @@ class Post extends Model
             'is_donation' => $this->is_donation,
             'category_id' => $this->category_id,
             'first_user_id' => $this->first_user,
-            'second_user_id' => $this->second_user_data?$this->second_user_data->id:0,
+            'second_user_id' => $this->second_user_data ? $this->second_user_data->id : 0,
             'category_name' => $this->category_name,
             'number_of_requests' => $this->number_of_requests,
             'first_user_name' => $this->first_user_name,
@@ -51,11 +51,11 @@ class Post extends Model
             'post_media' => $this->post_media,
             'first_user_image_link' => $this->first_user_image_link,
             'is_ordered' => $this->is_ordered != false ? true : false,
-            'Order_id' => $this->is_ordered == true ? $this->is_ordered->id: 0,
-            'is_he_the_owner_of_the_post' => $this->first_user===Auth::id()?true:false,
-            'is_completed' =>$this->is_completed ,
-            'published_at' =>$this->published_at ,
-
+            'Order_id' => $this->is_ordered == true ? $this->is_ordered->id : 0,
+            'is_he_the_owner_of_the_post' => $this->first_user === Auth::id() ? true : false,
+            'is_completed' => $this->is_completed,
+            'published_at' => $this->published_at,
+            'the_owner_is_login' => $this->first_user == Auth::id() ? true : false,
         ];
     }
 
@@ -64,49 +64,140 @@ class Post extends Model
     ];
 
     //controll panel
-    public function getPostDisplayDataAttribute(){
+    public function getPostDisplayDataAttribute()
+    {
         return [
-            'userImage'=>'<img src="'.$this->first_user_image_link.'"/>',
-            'userName'=>$this->first_user_name,
-            'postTitle'=>$this->title,
-            'categoryName'=>$this->price,
-            'RequestNumber'=>$this->number_of_requests,
-            'postedAt'=>$this->published_at,
-            'isDonation'=>$this->is_donation,
-            'isAvailable'=>$this->is_completed,
-            'tools'=>$this->show_post_images.'&nbsp'.$this->show_orders
+            'user' => $this->show_user_image_name,
+            'title' => $this->title,
+            'categoryName' => $this->category_name,
+            'RequestNumber' => $this->number_of_requests,
+            'postedAt' => $this->published_at,
+            'isDonation' => $this->show_is_donation_post,
+            'isAvailable' => $this->show_is_complete,
+            'tools' => $this->show_post_images . '&nbsp' . $this->show_orders
         ];
     }
 
-    public function scopeSearch($query,$searchWord)
+    public function scopeSearch($query, $searchWord)
     {
         return $query->where('id', 'like', "%" . $searchWord . "%")
-            ->orWhere('name', 'like', "%" . $searchWord . "%")
-            ->orWhere('userName', 'like', "%" . $searchWord . "%")
-            ->orWhereHas('category',function($query) use($searchWord){
+            ->orWhere('title', 'like', "%" . $searchWord . "%")
+//            ->orWhere('userName', 'like', "%" . $searchWord . "%")
+            ->orWhereHas('category', function ($query) use ($searchWord) {
                 $query->where('name', 'like', "%" . $searchWord . "%");
             });
     }
-    public function getShowOrdersAttribute(){
-        return '<button type="button" class="btn btn-info" data-toggle="tooltip" data-placement="top" rel="tooltip" title=" '.$this->number_of_requests.'" onclick="ShowOrders(\''.route('posts.ShowOrders',$this->id).'\',this)"><i class="bi bi-list-ul"></i></button>';
-    }
-    public function getShowPostImagesAttribute(){
-        return '<button type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="top" rel="tooltip" title="showImages '.$this->name.'" onclick="showImages(\''.route('posts.showImages',$this->id).'\')"><i class="bi bi-images"></i></button>';
+
+    public function getShowOrdersAttribute()
+    {
+        if ($this->number_of_requests == 0) {
+            return '<button  type="button" class="btn bg-gradient-faded-info w-80 mb-0 toast-btn disabled " data-toggle="tooltip" data-placement="top" rel="tooltip" title=" ' . $this->number_of_requests . '" onclick="ShowOrders(\'' . route('posts.ShowOrders', $this->id) . '\',this)"><i class="bi bi-list-ul"></i>post orders</button>';
+
+        }
+        return '<button type="button" class="btn bg-gradient-faded-info w-80 mb-0 toast-btn" data-toggle="tooltip" data-placement="top" rel="tooltip" title=" ' . $this->number_of_requests . '" onclick="ShowOrders(\'' . route('posts.ShowOrders', $this->id) . '\',this)"><i class="bi bi-list-ul"></i>post orders</button>';
     }
 
+    public function getShowPostImagesAttribute()
+    {
+        return '<button type="button"class="btn bg-gradient-warning w-80 mb-0 toast-btn" data-toggle="tooltip" data-placement="top" rel="tooltip" title="showImages ' . count($this->post_media) . '" onclick="showImages(\'' . route('posts.showImages', $this->id) . '\',this)"><i class="bi bi-images"></i>post images</button>';
+    }
 
+    public function getShowUserImageNameAttribute()
+    {
+        //       return '<div class=" btn d-flex px-2" id="img-clck">
+
+        return '<button class=" btn d-flex px-2" onclick="ShowProfileCard(\'' . route('posts.ShowProfileCard', $this->first_user) . '\')">
+                                  <div>
+                                    <img src="' . $this->first_user_image_link . '" class="avatar avatar-sm rounded-circle me-2" alt="spotify">
+                                  </div>
+                                  <div class="my-auto">
+                                    <h6 class="mb-0 text-sm">' . $this->first_user_name . '</h6>
+                                  </div>
+                                </button>';
+    }
+
+    public function getShowIsDonationPostAttribute()
+    {
+        if ($this->is_donation) {
+            return ' <button class="btn bg-gradient-light w-100 mb-0 toast-btn" type="button" data-target="successToast">Donation</button>';
+        }
+        return ' <button class="btn bg-gradient-faded-info w-100 mb-0 toast-btn" type="button" data-target="successToast">Request</button>';
+    }
+
+    public function getShowIsCompleteAttribute()
+    {
+        if ($this->is_completed) {
+            return ' <label class="text-primary text-sm badge badge-success">Closed</label>';
+        }
+        return '<label class="text-danger text-2xl badge badge-danger">Pending</label>';
+    }
+
+//-------------------------------start scope -------------------------------------
+    public function scopeDonation($query, $searchWord)
+    {
+        if (!empty($searchWord) || $searchWord == 0) {
+            if ($searchWord == 0 || $searchWord == 1) {
+                return $query->where('is_donation', $searchWord);
+            } else {
+                return $query;
+            }
+        } else {
+            return $query;
+        }
+    }
+
+    public function scopeStatus($query, $searchWord)
+    {
+        if (!empty($searchWord) || $searchWord == 0) {
+//            dd($searchWord);
+            if ($searchWord == 0) {
+                return $query->whereNull('second_user');
+            } else if ($searchWord == 1) {
+                return $query->whereNotNull('second_user');
+            } else {
+                return $query;
+            }
+        } else {
+            return $query;
+        }
+    }
+
+    public function scopePostCategory($query, $searchWord)
+    {
+        if (!empty($searchWord) || $searchWord == 0) {
+            if ($searchWord == 0) {
+                return $query;
+            } else
+                return $query->where('category_id', $searchWord);
+        } else {
+            return $query;
+        }
+    }
+
+    public function scopeData($query, $searchWord)
+    {
+        if (!empty($searchWord)) {
+            return $query->where('title', 'like', "%" . $searchWord . "%")->orWhere('description', 'like', "%" . $searchWord . "%");
+        } else {
+            return $query;
+        }
+
+    }
+//-------------------------------end scope---------------------------------------
 //Api
     public function getPostOrdersAttribute()
     {
         return $this->orders ? $this->orders : 'orders not found';
     }
+
     public function getPublishedAtAttribute()
     {
         return $this->created_at->diffForHumans(now());
     }
+
     public function getIsCompletedAttribute()
     {
-        return $this->second_user===null?false:true;
+        return $this->second_user === null ? false : true;
     }
 
 
@@ -142,6 +233,7 @@ class Post extends Model
     {
         return $this->user ? $this->user->id : 0;
     }
+
     public function getFirstUserTokenAttribute()
     {
         return $this->user ? $this->user->fcm_token : 'user not found';
@@ -157,6 +249,7 @@ class Post extends Model
     {
         return $this->second_user_data ? $this->second_user_data->name : 'not found';
     }
+
     public function getSecondUserTokenAttribute()
     {
         return $this->second_user_data ? $this->second_user_data->fcm_token : 'user not found';
@@ -169,12 +262,15 @@ class Post extends Model
 
     public function getFirstUserImageLinkAttribute()
     {
-        return $this->user ? ($this->user->img ? url('/storage/' . $this->user->img) : url("control_panel_style/images/auth/user.png")) : "control_panel_style/images/auth/user.png";
+        return $this->user ? ($this->user->img ? url('/storage/' . $this->user->img) :
+            url("control_panel_style/usericon.png")) : "control_panel_style/usericon.png";
     }
 
     public function getSecondUserImageLinkAttribute()
     {
-        return $this->second_user_data ? ($this->second_user_data->img ? url('/storage/' . $this->second_user_data->img) : url("control_panel_style/images/auth/user.png")) : "control_panel_style/images/auth/user.png";
+        return $this->second_user_data ? ($this->second_user_data->img ?
+            url('/storage/' . $this->second_user_data->img) :
+            url("control_panel_style/usericon.png")) : "control_panel_style/usericon.png";
 
     }
 
@@ -198,8 +294,9 @@ class Post extends Model
         return $media;
     }
 
-    public function  getOrderIdAttribute(){
-        return $this->orders ?($this->orders->user_id == Auth::id()?$this->orders->user_id :0):0;
+    public function getOrderIdAttribute()
+    {
+        return $this->orders ? ($this->orders->user_id == Auth::id() ? $this->orders->user_id : 0) : 0;
     }
 
     // one post has one category
@@ -231,6 +328,7 @@ class Post extends Model
     {
         return $this->hasMany(Media::class);
     }
+
     //one post has many notifications
     public function notifications()
     {

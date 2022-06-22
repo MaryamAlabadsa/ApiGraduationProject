@@ -38,6 +38,7 @@ class PostResource extends JsonResource
             'is_he_the_owner_of_the_post' => $this->first_user===Auth::id()?true:false,
             'is_completed' => $this->second_user===null?false:true,
             'published_at' => $this->created_at->diffForHumans(now()),
+            'the_owner_is_login' => $this->first_user==Auth::id()?true:false,
         ];
     }
 }

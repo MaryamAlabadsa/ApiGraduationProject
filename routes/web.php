@@ -23,6 +23,13 @@ Route::get('/dashboard', function () {
 
 require __DIR__.'/auth.php';
 
-Route::resource('posts',\App\Http\Controllers\control_panel\PostController::class);
-Route::get('/getPostsData', [\App\Http\Controllers\control_panel\PostController ::class,'getData'])->name('Posts.getData');
+Route::resource('posts',\control_panel\PostController::class);
+Route::get('/getPostsData', [\App\Http\Controllers\control_panel\PostController::class,'getData'])->name('posts.getData');
+Route::get('/postsOrders/{id}', [\App\Http\Controllers\control_panel\PostController::class,'ShowOrders'])->name('posts.ShowOrders');
+Route::get('/postsImages/{id}', [\App\Http\Controllers\control_panel\PostController::class,'showImages'])->name('posts.showImages');
+Route::get('/profileCard/{id}', [\App\Http\Controllers\control_panel\UsersController::class,'showUserProfileCard'])->name('posts.ShowProfileCard');
+
+Route::resource('users',\control_panel\UsersController::class);
+Route::get('/getUsersData', [\App\Http\Controllers\control_panel\UsersController::class,'getData'])->name('users.getData');
+
 

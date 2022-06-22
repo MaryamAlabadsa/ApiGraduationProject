@@ -67,7 +67,8 @@ class ProfileController extends Controller
     {
         $user = User::where('id', $id)->first();
 
-        $user_image = $user->img ? url('/storage/' . $user->img) : url("control_panel_style/images/auth/user.png");
+        $user_image = $user->img ? url('/storage/' . $user->img) :
+            url("control_panel_style/usericon.png");
         return response()->json(
             [
                 'message' => 'returned successfully',
@@ -86,7 +87,8 @@ class ProfileController extends Controller
         $userId = Auth::id();
 
         $user = User::where('id', $userId)->first();
-        $user_image = $user->img ? url('/storage/' . $user->img) : url("control_panel_style/images/auth/user.png");
+        $user_image = $user->img ? url('/storage/' . $user->img) :
+            url("control_panel_style/usericon.png");
 
         return response()->json(
             [

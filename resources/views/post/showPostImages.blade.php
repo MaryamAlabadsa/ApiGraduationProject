@@ -1,27 +1,12 @@
-<!-- Carousel wrapper -->
-<div id="carouselBasicExample" class="carousel slide carousel-fade" data-mdb-ride="carousel">
+<div class="row ">
+    @foreach($posts->post_media as $image)
 
-    <!-- Inner -->
-    <div class="carousel-inner">
-        <!-- Single item -->
-        @foreach($posts->post_media as $post)
-        <div class="carousel-item active">
-            <img src="{{$post}}" class="d-block w-100"
-                 alt="Sunset Over the City" />
+        <div class="col-xl-3 col-md-3 mb-xl-0 mb-4">
+
+            <a href="{{$image}}" class="image-tile w-100"><img src="{{$image}}" class="w-70"
+                                                               alt="image small"></a>
+
         </div>
     @endforeach
 
-    <!-- Controls -->
-    <button class="carousel-control-prev" type="button" data-mdb-target="#carouselBasicExample"
-            data-mdb-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-mdb-target="#carouselBasicExample"
-            data-mdb-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
-</div>
-<!-- Carousel wrapper -->
 </div>

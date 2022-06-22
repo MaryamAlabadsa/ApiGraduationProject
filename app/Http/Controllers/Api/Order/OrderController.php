@@ -35,11 +35,20 @@ class OrderController extends Controller
      */
     public function store(OrderRequest $request)
     {
-        $order = Order::create([
-            'massage' => $request->massage,
-            'post_id' => $request->post_id,
-            'user_id' => Auth::id(),
-        ]);
+        $deleteOrder = Order::onlyTrashed()->where([["deleted_at", '!=', null],
+            ['user_id', '=',  Auth::id()],['post_id','=',$request->post_id]])->first();
+        if ($deleteOrder) {
+            $deleteOrder->restore();
+            $deleteOrder->update(['massage' => $request->massage]);
+            return ['message' => 'You have successfully restore your post.'];
+        }else{
+            $order = Order::create([
+                'massage' => $request->massage,
+                'post_id' => $request->post_id,
+                'user_id' => Auth::id(),
+            ]);
+        }
+
         $token = Post::where('id', $request->post_id)->first()->first_user_token;
 
         Notification::create([
@@ -83,11 +92,17 @@ class OrderController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Order $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, Order $order)
     {
+         $order->update(['massage' => $request->massage]);
 
+        return response()->json(
+            [
+                'message' => 'updated Successfully',
+            ]
+        );
     }
 
     /**
@@ -109,6 +124,16 @@ class OrderController extends Controller
             return ['message' => 'You can not delete this order.',
             ];
 
+
+    }
+    public function restoreOrder($id)
+    {
+        $deleteOrder = Order::onlyTrashed()->where([["deleted_at", '!=', null], ['id', '=', $id]])->first();
+        if ($deleteOrder) {
+            $deleteOrder->restore();
+            return ['message' => 'You have successfully restore your post.'];
+        }
+        return ['message' => 'You can not restore this order.'];
 
     }
 

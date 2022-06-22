@@ -1,3 +1,5 @@
+
+
 function addNew(url,obj) {
     // dd(999);
     $(obj).append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
@@ -9,8 +11,8 @@ function addNew(url,obj) {
             title: 'add new Post',
             footer: '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>',
             html:data['view'],
-            width:'80%',
-            showCancelButton: false,
+            width:'100',
+            showCancelButton: true,
             showConfirmButton: false,
             // confirmButtonText: 'Add',
             showLoaderOnConfirm: false,
@@ -31,12 +33,42 @@ function showImages(url,obj) {
         $(obj).empty().append('showImages');
         $(obj).attr('disabled',false);
         console.log(data);
+
         Swal.fire({
             title: 'update lab',
-            footer: '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="margin-left: auto;">Finish</a>',
+            // footer: '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="margin-left: auto;">Finish</a>',
             html:data['view'],
-            width:'80%',
-            showCancelButton: false,
+            // width:'80%',
+            showCancelButton: true,
+            showConfirmButton: false,
+            background:'#ae9cc9',
+
+            // confirmButtonText: 'Add',
+            showLoaderOnConfirm: false
+
+        }).then(
+            function () {
+
+            }
+        );
+
+    });
+
+}
+
+function ShowOrders(url,obj) {
+    $(obj).append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+    $(obj).attr('disabled',true);
+    $.get(url,function (data) {
+        $(obj).empty().append('ShowOrders');
+        $(obj).attr('disabled',false);
+        console.log(data);
+        Swal.fire({
+            title: 'post orders',
+            // footer: '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="margin-left: auto;">Finish</a>',
+            html:data['view'],
+            // width:'80%',
+            showCancelButton: true,
             showConfirmButton: false,
             // confirmButtonText: 'Add',
             showLoaderOnConfirm: false
@@ -47,27 +79,34 @@ function showImages(url,obj) {
         );
     });
 }
-function ShowOrders(url,obj) {
+function ShowProfileCard(url,obj) {
+    // dd('ppp');
     $(obj).append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
     $(obj).attr('disabled',true);
     $.get(url,function (data) {
-        $(obj).empty().append('ShowOrders');
+        // $(obj).empty().append('showProfileCard');
         $(obj).attr('disabled',false);
         console.log(data);
         Swal.fire({
-            title: 'post orders',
-      footer: '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="margin-left: auto;">Finish</a>',
             html:data['view'],
-            width:'80%',
-            showCancelButton: false,
+            showCancelButton: true,
             showConfirmButton: false,
-            // confirmButtonText: 'Add',
-            showLoaderOnConfirm: false
-        }).then(
-            function () {
+            showLoaderOnConfirm: true
+        }).then((value) => {
+            switch (value) {
 
+                case "btn-show-details":
+                    swal("Pikachu fainted! You gained 500 XP!");
+                    break;
+
+                case "catch":
+                    swal("Gotcha!", "Pikachu was caught!", "success");
+                    break;
+
+                default:
+                    swal("Got away safely!");
             }
-        );
+        });
     });
 }
 
@@ -93,13 +132,6 @@ function deleteItem(url) {
                     type: 'post',
                     data: {_method:'delete'},
                     success: function (result) {
-                        // Swal.fire({
-                        //     icon: result.type,
-                        //     title: result.title,
-                        //     text: result.msg
-                        //
-                        // });
-
                         Toast.fire({
                             icon: result.type,
                             title: result.msg
@@ -108,39 +140,8 @@ function deleteItem(url) {
                         // return result;
                     },
                     error: function (errors) {
-                        //     const entries = Object.entries(errors.responseJSON.errors);
-                        //     var errors_message = document.createElement('div');
-                        //     for(let x of entries){
-                        //         if(x[0].includes('.')){
-                        //             var key = x[0].split('.');
-                        //             errors_message = document.createElement('div');
-                        //             errors_message.classList.add('invalid-feedback');
-                        //             errors_message.classList.add('show');
-                        //             document.querySelectorAll('input[name="' + key[0] + '[]"]')[key[1]].classList.add('is-invalid');
-                        //             errors_message.innerHTML = x[1][0];
-                        //             document.querySelectorAll('input[name="' + key[0] + '[]"]')[key[1]].parentElement.appendChild(errors_message);
-                        //         }else {
-                        //             if (document.querySelector('input[name="' + x[0] + '"]')) {
-                        //                 errors_message = document.createElement('div');
-                        //                 errors_message.classList.add('invalid-feedback');
-                        //                 errors_message.classList.add('show');
-                        //                 document.querySelector('input[name="' + x[0] + '"]').classList.add('is-invalid');
-                        //                 errors_message.innerHTML = x[1][0];
-                        //                 document.querySelector('input[name="' + x[0] + '"]').parentElement.appendChild(errors_message);
-                        //             } else {
-                        //                 errors_message = document.createElement('div');
-                        //                 errors_message.classList.add('invalid-feedback');
-                        //                 errors_message.classList.add('show');
-                        //                 document.querySelector('input[name="area_name"]').classList.add('is-invalid');
-                        //                 errors_message.innerHTML = x[1][0];
-                        //                 document.querySelector('input[name="area_name"]').parentElement.appendChild(errors_message);
-                        //             }
-                        //         }
-                        //     }
                     }
 
-                    // });
-                    // return false;
                 });
             }
         });

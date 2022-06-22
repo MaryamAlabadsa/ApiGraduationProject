@@ -3,9 +3,10 @@
 
 <head>
     <meta charset="utf-8"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="{{asset('img/apple-icon.png')}}">
-    <link rel="icon" type="image/png" href=".{{asset('img/favicon.png')}}">
+    <link rel="icon" type="image/png" href="{{asset('control_panel_style/logo.png')}}">
 @yield('title')
 
 <!--     Fonts and icons     -->
@@ -70,6 +71,7 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
 <script src="{{ asset('js/material-dashboard.js?v=3.0.2')}}"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
@@ -77,6 +79,8 @@
 <script src="https://cdn.datatables.net/autofill/2.4.0/js/dataTables.autoFill.min.js"></script>
 <script src="https://cdn.datatables.net/autofill/2.4.0/js/autoFill.bootstrap4.min.js"></script>
 <script src="{{asset('sweetalert.js')}}"></script>
+{{--<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>--}}
+
 <script class="swalMixin">
     const Toast = Swal.mixin({
         toast: true,

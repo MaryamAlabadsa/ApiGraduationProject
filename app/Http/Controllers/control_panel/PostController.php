@@ -18,17 +18,18 @@ class PostController extends Controller
      */
     public function index()
     {
-        $Posts = Post::all();
-        return view('Post.index', compact('Posts'));
+        $posts = Post::all();
+        return view('post.index', compact('posts'));
     }
+
     public function getData(Request $request)
     {
 //        dd($areas);
         $columns = array(
 
-            array( 'db' => 'userName',          'dt' => 1 ),
-            array( 'db' => 'postTitle',   'dt' => 2 ),
-            array( 'db' => 'categoryName',         'dt' => 3 ),
+//            array( 'db' => 'userName',          'dt' => 1 ),
+            array('db' => 'title', 'dt' => 2),
+            array('db' => 'categoryName', 'dt' => 3),
 //            array( 'db' => 'description',   'dt' => 4 )
         );
 
@@ -42,7 +43,7 @@ class PostController extends Controller
 
         $value = array();
 
-        if(!empty($search)){
+        if (!empty($search)) {
             $count = Post::search($search)
                 ->count();
             $items = Post::search($search)
@@ -54,9 +55,9 @@ class PostController extends Controller
             limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
                 ->get();
         }
-        foreach ($items as $index => $item){
+        foreach ($items as $index => $item) {
 //            dd($item->unPaidMaterials);
-            array_push($value , $item->Post_display_data);
+            array_push($value, $item->Post_display_data);
         }
         return [
             "draw" => $draw,
@@ -77,14 +78,14 @@ class PostController extends Controller
     {
         $posts = new Post();
         $category = Category::all();
-        return response()->json(['view'=>view('Post.create',compact('posts','category'))->render(),'Post_id'=>$posts->id]);
+        return response()->json(['view' => view('Post.create', compact('posts', 'category'))->render(), 'Post_id' => $posts->id]);
 
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StorePostRequest  $request
+     * @param \App\Http\Requests\StorePostRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StorePostRequest $request)
@@ -100,13 +101,13 @@ class PostController extends Controller
             $Post->update(['image' => $request->image->store('public', 'public')]);
         }
 //        Post::create($request->all());
-        return response()->json(['msg'=>'new Post data is created successfully','type'=>'success','title'=>'Create']);
+        return response()->json(['msg' => 'new Post data is created successfully', 'type' => 'success', 'title' => 'Create']);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Post  $prodect
+     * @param \App\Models\Post $prodect
      * @return \Illuminate\Http\Response
      */
     public function show(Post $prodect)
@@ -117,56 +118,62 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Post  $prodect
+     * @param \App\Models\Post $prodect
      * @return \Illuminate\Http\JsonResponse
      */
     public function edit(Post $Post)
     {
         $categories = Category::all();
-        return response()->json(['view'=>view('Post.update',compact('Post','categories'))->render(),'Post_id'=>$Post->id]);
+        return response()->json(['view' => view('Post.update', compact('Post', 'categories'))->render(), 'Post_id' => $Post->id]);
 
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdatePostRequest  $request
-     * @param  \App\Models\Post  $prodect
+     * @param \App\Http\Requests\UpdatePostRequest $request
+     * @param \App\Models\Post $prodect
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdatePostRequest $request, Post $Post)
     {
         $Post->name = $request->input('name');
-           $Post->description = $request->input('description');
-           $Post->category_id = $request->input('category_id');
-           $Post->price = $request->input('price');
+        $Post->description = $request->input('description');
+        $Post->category_id = $request->input('category_id');
+        $Post->price = $request->input('price');
 //        'past_medical_history_id'=>isset($request->past_medical_history_id) ? $request->past_medical_history_id : null,
 
-           $Post->save();
-        return response()->json(['msg'=>'a Post data is updated successfully','type'=>'success','title'=>'Update']);
+        $Post->save();
+        return response()->json(['msg' => 'a Post data is updated successfully', 'type' => 'success', 'title' => 'Update']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Post  $Post
+     * @param \App\Models\Post $Post
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Post $Post)
     {
         $Post->delete();
-        return response()->json(['msg'=>'a Post data is deleted successfully','type'=>'success','title'=>'Delete']);
+        return response()->json(['msg' => 'a Post data is deleted successfully', 'type' => 'success', 'title' => 'Delete']);
 
     }
-    public function ShowOrders(Post $posts)
-    {
-        $orders = Order::where('post_id', $posts->id)->get();
 
-        return response()->json(['view'=>view('Post.showOrders',compact('posts','orders'))->render(),'Post_id'=>$posts->id]);
-    }
-    public function showImages(Post $posts)
+    public function ShowOrders(Request $request)
     {
-        return response()->json(['view'=>view('Post.showPostImages',compact('posts',))->render(),'Post_id'=>$posts->id]);
+        $post = Post::where('id', $request->id)->first();
+        $orders = Order::where('post_id', $post->id)->get();
+
+        return response()->json(['view' => view('post.showOrders', compact('post', 'orders'))->render(), 'Post_id' => $post->id]);
+    }
+
+    public function showImages(Request $request)
+    {
+        $posts = Post::where('id', $request->id)->first();
+//        dd($posts->id);
+
+        return response()->json(['view' => view('post.showPostImages', compact('posts',))->render(), 'Post_id' => $posts->id]);
     }
 
 }

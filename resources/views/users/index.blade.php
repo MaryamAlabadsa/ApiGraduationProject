@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title')
-    <title>Posts - final project</title>
+    <title>Users - final project</title>
 @endsection
 
 @section('style')
@@ -22,57 +22,46 @@
 @endsection
 
 @section('aside')
-    @include('post.aside')
-
+    @include('users.aside')
 @endsection
 
 @section('content')
+
     <div class="row">
         <div class="col-12">
             <div class="card my-4">
                 <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                     <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
                         <div class="container" style="display: inline-flex ; justify-content: space-between">
-                            <h6 class="text-white text-capitalize ps-3">Posts table</h6>
-
-{{--                            <button type="button" class="btn btn-outline-primary"--}}
-{{--                                    onclick="addNew('{{ route('Posts.create') }}',this)">--}}
-{{--                                Add--}}
-{{--                            </button>--}}
+                            <h6 class="text-white text-capitalize ps-3">users table</h6>
                         </div>
                     </div>
                 </div>
                 <div class="card-body px-0 pb-2">
                     <div class="table-responsive p-3">
-                        <table id="dataTable" class="table align-items-center justify-content-center mb-0">
+                        <table id="dataTable1" class="table align-items-center mb-0">
                             <thead>
                             <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                    user
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">id
                                 </th>
-
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                    postTitle
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Image &
+                                    name
                                 </th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                    categoryName
+                                    email
                                 </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                    RequestNumber
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    phone number
                                 </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                    postedAt
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    address
                                 </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                    isDonation
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    num donation post
                                 </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                    isAvailable
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    num request post
                                 </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">
-                                    actions
-                                </th>
-                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -87,14 +76,12 @@
 @endsection
 
 @section('script')
-    <script src="{{ asset('control_panel_style/ajax/post.js') }}"></script>
-
     <script type="text/javascript">
         $(document).ready(function () {
-            var table = $('#dataTable').DataTable({
+            var table = $('#dataTable1').DataTable({
                 "processing": true,
                 "serverSide": true,
-                "ajax": "{{ route('posts.getData') }}",
+                "ajax": "{{ route('users.getData') }}",
                 "pagingType": "full_numbers",
                 "drawCallback": function (settings) {
                     $("[rel='tooltip']").tooltip();
@@ -103,23 +90,36 @@
                     {"sortable": false, "targets": [0, 4]}
                 ],
                 "aoColumns": [
+                    {"mData": "id"},
                     {"mData": "user"},
-                    // {"mData": "userName"},
-                    {"mData": "title"},
-                    {"mData": "categoryName"},
-                    {"mData": "RequestNumber"},
-                    {"mData": "postedAt"},
-                    {"mData": "isDonation"},
-                    {"mData": "isAvailable"},
-                    {"mData": "tools"}
+                    {"mData": "email"},
+                    {"mData": "phoneNumber"},
+                    {"mData": "address"},
+                    {"mData": "num_donation_posts"},
+                    {"mData": "num_request_posts"},
+                    {"mData": "created_at"}
                 ]
             });
-
-
         });
     </script>
-
-
 @endsection
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

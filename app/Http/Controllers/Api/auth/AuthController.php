@@ -44,15 +44,17 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('authtoken');
-        sendnotification(adminToken()
-            , "new user registered", $user->name . " create new account", ['user_id' => $user->id]);
-        Notification::create([
-            'post_id' => 0,
-            'sender_id' => $user->id,
-            'receiver_id' => adminId(),
-            'type' => 'admin',
-        ]);
-        $user->update(['fcm_token'=>$request->fcm_token]);
+        if (adminToken()!=null){
+            sendnotification(adminToken(), "new user registered", $user->name . " create new account", ['user_id' => $user->id]);
+            Notification::create([
+                'post_id' => 0,
+                'sender_id' => $user->id,
+                'receiver_id' => adminId(),
+                'type' => 'admin',
+            ]);
+        }
+
+        $user->update(['fcm_token' => $request->fcm_token]);
         return response()->json(
             [
                 'message' => 'User Registered',
@@ -72,7 +74,7 @@ class AuthController extends Controller
             $user->makeVisible('password');
             if (\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) { // true}else{//false}
                 $token = $user->createToken('authtoken');
-                $user->update(['fcm_token'=>$request->fcm_token]);
+                $user->update(['fcm_token' => $request->fcm_token]);
                 return response()->json(
                     [
                         'message' => 'Logged in baby',
@@ -110,14 +112,23 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
-        $request->user()->update(['fcm_token'=>null]);
+        if( $request->user()->id==32){
+            return response()->json(
+                [
+                    'message' => 'Logged out'
+                ]
+            );
+        }else{
+            $request->user()->tokens()->delete();
+            $request->user()->update(['fcm_token' => null]);
 
-        return response()->json(
-            [
-                'message' => 'Logged out'
-            ]
-        );
+            return response()->json(
+                [
+                    'message' => 'Logged out'
+                ]
+            );
+        }
+
 
     }
 
