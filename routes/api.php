@@ -31,12 +31,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/restorePost/{id}', [\App\Http\Controllers\Api\Post\PostController::class, 'restorePost']);
     Route::post('/restoreOrder/{id}', [\App\Http\Controllers\Api\Order\OrderController::class, 'restoreOrder']);
     Route::post('/searchPost', [\App\Http\Controllers\Api\Post\PostController::class, 'scopeSearchPostData']);
+    Route::put('/changePostStatus/{post}', [\App\Http\Controllers\Api\Post\PostController::class, 'changePostStatus']);
 
     Route::post('myDonationPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getMyDonationPosts']);
     Route::post('myRequestsPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getMyRequestPosts']);
     Route::post('UserDonationPosts/{id}', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getUserDonationPosts']);
     Route::post('UserRequestPosts/{id}', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getUserRequestPosts']);
     Route::post('UpdateUserName', [AuthController::class, 'updateUserName']);
+
+    Route::delete('deleteImage', [\App\Http\Controllers\Api\Media\MediaController::class, 'deleteImage']);
 
 
 

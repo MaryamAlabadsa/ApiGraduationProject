@@ -96,7 +96,9 @@ class OrderController extends Controller
      */
     public function update(Request $request, Order $order)
     {
+//        dd($request->i);
          $order->update(['massage' => $request->massage]);
+//        $user = Auth::user()->update(['name' => $request->name]);
 
         return response()->json(
             [

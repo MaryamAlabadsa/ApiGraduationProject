@@ -8,6 +8,17 @@ use Illuminate\Http\Request;
 
 class MediaController extends Controller
 {
+    public function deleteImage(Request $request)
+    {
+//        dd($request->imageName);
+        $image = Media::where("name",  $request->imageName)->first();
+//        dd($image);
+
+        $image->delete();
+        return ['message' => 'You have successfully delete your order.'];
+
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +32,7 @@ class MediaController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -32,7 +43,7 @@ class MediaController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Media  $media
+     * @param \App\Models\Media $media
      * @return \Illuminate\Http\Response
      */
     public function show(Media $media)
@@ -43,8 +54,8 @@ class MediaController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Media  $media
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Media $media
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Media $media)
@@ -55,7 +66,7 @@ class MediaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Media  $media
+     * @param \App\Models\Media $media
      * @return \Illuminate\Http\Response
      */
     public function destroy(Media $media)

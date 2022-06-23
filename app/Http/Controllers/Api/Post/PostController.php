@@ -98,10 +98,42 @@ class PostController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Post $post
-     * @return array
+     * @return string[]
      */
     public function update(Request $request, Post $post)
     {
+//        dd($request->title);
+        $post->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'is_donation' => $request->is_donation,
+        ]);
+
+        if ($request->hasFile('assets')) {
+            foreach ($request->assets as $file) {
+                $image_name = $file->store('public', 'public');
+                $post->media()->create([
+                    'post_id' => $post->id,
+                    'name' => $image_name,
+                ]);
+            }
+        }
+        return ['message' => 'You have successfully delete your order.'];
+
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Post $post
+     * @return array
+     */
+    public function changePostStatus(Request $request, Post $post)
+    {
+
+//        dd($post->id);
         $user = auth('sanctum')->user();
         if (!$post->second_user) {
             if ($post->first_user === $user->getAuthIdentifier()) {
@@ -141,9 +173,8 @@ class PostController extends Controller
                 'data' => null,
             ];
         }
-
-
     }
+
 
     /**
      * Remove the specified resource from storage.
