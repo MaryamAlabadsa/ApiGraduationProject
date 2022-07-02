@@ -33,3 +33,7 @@ Route::resource('users',\control_panel\UsersController::class);
 Route::get('/getUsersData', [\App\Http\Controllers\control_panel\UsersController::class,'getData'])->name('users.getData');
 
 
+Route::get('/profile/{user}', [\App\Http\Controllers\control_panel\ProfileController::class,'index']);
+Route::get('/getProfileUsersData', [\App\Http\Controllers\control_panel\ProfileController::class,'getData'])->name('profile.getData');
+
+

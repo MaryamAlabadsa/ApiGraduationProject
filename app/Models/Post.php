@@ -47,14 +47,15 @@ class Post extends Model
             'first_user_name' => $this->first_user_name,
             'second_user_name' => $this->second_user_name,
             'post_first_user_email' => $this->post_first_user_email,
-            'post_second_user_email' => $this->post_second_user_email,
+            'post_second_user_email' =>   $this->post_second_user_email,
             'post_media' => $this->post_media,
             'first_user_image_link' => $this->first_user_image_link,
             'is_ordered' => $this->is_ordered != false ? true : false,
             'Order_id' => $this->is_ordered == true ? $this->is_ordered->id : 0,
             'is_he_the_owner_of_the_post' => $this->first_user === Auth::id() ? true : false,
             'is_completed' => $this->is_completed,
-            'published_at' => $this->published_at,
+            'post_created_at' => $this->created_at->diffForHumans(now()),
+            'post_updated_at' => $this->updated_at->diffForHumans(now()),
             'the_owner_is_login' => $this->first_user == Auth::id() ? true : false,
         ];
     }
@@ -93,8 +94,8 @@ class Post extends Model
         if ($this->number_of_requests == 0) {
             return '<button  type="button" class="btn bg-gradient-faded-info w-80 mb-0 toast-btn disabled " data-toggle="tooltip" data-placement="top" rel="tooltip" title=" ' . $this->number_of_requests . '" onclick="ShowOrders(\'' . route('posts.ShowOrders', $this->id) . '\',this)"><i class="bi bi-list-ul"></i>post orders</button>';
 
-        }
-        return '<button type="button" class="btn bg-gradient-faded-info w-80 mb-0 toast-btn" data-toggle="tooltip" data-placement="top" rel="tooltip" title=" ' . $this->number_of_requests . '" onclick="ShowOrders(\'' . route('posts.ShowOrders', $this->id) . '\',this)"><i class="bi bi-list-ul"></i>post orders</button>';
+        } else
+            return '<button type="button" class="btn bg-gradient-faded-info w-80 mb-0 toast-btn" data-toggle="tooltip" data-placement="top" rel="tooltip" title=" ' . $this->number_of_requests . '" onclick="ShowOrders(\'' . route('posts.ShowOrders', $this->id) . '\',this)"><i class="bi bi-list-ul"></i>post orders</button>';
     }
 
     public function getShowPostImagesAttribute()

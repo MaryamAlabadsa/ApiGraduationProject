@@ -35,37 +35,46 @@ class OrderController extends Controller
      */
     public function store(OrderRequest $request)
     {
+        $token = Post::where('id', $request->post_id)->first()->first_user_token;
+
         $deleteOrder = Order::onlyTrashed()->where([["deleted_at", '!=', null],
-            ['user_id', '=',  Auth::id()],['post_id','=',$request->post_id]])->first();
+            ['user_id', '=', Auth::id()], ['post_id', '=', $request->post_id]])->first();
         if ($deleteOrder) {
             $deleteOrder->restore();
-            $deleteOrder->update(['massage' => $request->massage]);
-            return ['message' => 'You have successfully restore your post.'];
-        }else{
+            $order = $deleteOrder->update(['massage' => $request->massage]);
+
+        } else {
             $order = Order::create([
                 'massage' => $request->massage,
                 'post_id' => $request->post_id,
                 'user_id' => Auth::id(),
             ]);
         }
+        $receiver_id=Post::where('id', $request->post_id)->first()->first_user;
+        $deleteNotification = Notification::onlyTrashed()->where([["type", '=', "add_request"],
+            ["deleted_at", '!=', null], ['post_id', '=', $request->post_id],['receiver_id','=',$receiver_id]])->first();
+        if ($deleteOrder) {
+            $deleteNotification->restore();
+            $deleteNotification->update([
+                'type' => 'add_request',
+            ]);
+        }else{
+            Notification::create([
+                'post_id' => $request->post_id,
+                'sender_id' => Auth::id(),
+                'receiver_id' => $receiver_id,
+                'type' => 'add_request',
+            ]);
+        }
+        sendnotification($token, 'add new request', Auth::user()->name  . ' send you request', ['post_id' => $request->post_id]);
 
-        $token = Post::where('id', $request->post_id)->first()->first_user_token;
-
-        Notification::create([
+            Notification::create([
             'post_id' => $request->post_id,
             'sender_id' => Auth::id(),
-            'receiver_id' => Post::where('id', $request->post_id)->first()->first_user,
-            'type' => 'add_request',
+            'receiver_id' => adminId(),
+            'type' => 'admin_add_request',
         ]);
-        sendnotification($token, 'add new request', Auth::user()->getAuthIdentifierName() .' send you request',['post_id'=>$request->post_id]);
-        Notification::create([
-            'post_id' => $request->post_id,
-            'sender_id' => Auth::id(),
-            'receiver_id' =>adminId(),
-            'type' => 'admin',
-        ]);
-        sendnotification(adminToken()
-            , "some one add new order", Auth::user()->name ."add new order ", ['post_id'=>$request->post_id]);
+        sendnotification(adminToken(), "some one add new order", Auth::user()->name . " add new order ", ['post_id' => $request->post_id]);
 
         return ['message' => 'added Successfully',
             'data' => OrderResource::make($order),
@@ -97,7 +106,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
 //        dd($request->i);
-         $order->update(['massage' => $request->massage]);
+        $order->update(['massage' => $request->massage]);
 //        $user = Auth::user()->update(['name' => $request->name]);
 
         return response()->json(
@@ -116,10 +125,21 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         $user = Auth::id();
+        $token = Post::where('id', $order->post_id)->first()->first_user_token;
+
         if ($order->user_id == $user) {
             $order->delete();
-            $notification=Notification::where([['sender_id', '=', $user], ['post_id', '=', $order->post_id]])->first();
-           $notification->delete();
+            $notification = Notification::where([['sender_id', '=', $user], ['post_id', '=', $order->post_id]])->first();
+            $notification->delete();
+            $notification->update([
+                'type' => 'delete_request',
+            ]);
+
+            $notification = Notification::where([['sender_id', '=', $user], ['post_id', '=', $order->post_id], ["type", '=', 'admin']])->first();
+            if ($notification)
+                $notification->delete();
+            sendnotification($token, 'delete request', Auth::user()->name . ' deleted her/his request .', ['post_id' => $order->post_id]);
+
             return ['message' => 'You have successfully delete your order.',
             ];
         } else
@@ -128,6 +148,7 @@ class OrderController extends Controller
 
 
     }
+
     public function restoreOrder($id)
     {
         $deleteOrder = Order::onlyTrashed()->where([["deleted_at", '!=', null], ['id', '=', $id]])->first();

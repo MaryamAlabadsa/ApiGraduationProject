@@ -11,7 +11,7 @@ function addNew(url,obj) {
             title: 'add new Post',
             footer: '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>',
             html:data['view'],
-            width:'100',
+            // width:'100',
             showCancelButton: true,
             showConfirmButton: false,
             // confirmButtonText: 'Add',
@@ -38,7 +38,7 @@ function showImages(url,obj) {
             title: 'update lab',
             // footer: '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="margin-left: auto;">Finish</a>',
             html:data['view'],
-            // width:'80%',
+            width:'80%',
             showCancelButton: true,
             showConfirmButton: false,
             background:'#ae9cc9',
@@ -67,7 +67,7 @@ function ShowOrders(url,obj) {
             title: 'post orders',
             // footer: '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="margin-left: auto;">Finish</a>',
             html:data['view'],
-            // width:'80%',
+            width:'80%',
             showCancelButton: true,
             showConfirmButton: false,
             // confirmButtonText: 'Add',
@@ -80,7 +80,6 @@ function ShowOrders(url,obj) {
     });
 }
 function ShowProfileCard(url,obj) {
-    // dd('ppp');
     $(obj).append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
     $(obj).attr('disabled',true);
     $.get(url,function (data) {

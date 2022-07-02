@@ -32,7 +32,7 @@ class PostController extends Controller
             $request->limit = 10;
         }
 
-        $posts = Post::orderBy('created_at', "desc")->paginate($request->limit);
+        $posts = Post::orderBy('updated_at', "desc")->paginate($request->limit);
 
         return new PostCollection($posts);
     }
@@ -45,7 +45,7 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-
+//        dd($request->all());
         $post = Post::create([
             'title' => $request->title,
             'description' => $request->description,
@@ -69,7 +69,7 @@ class PostController extends Controller
             'post_id' => $post->id,
             'sender_id' => Auth::id(),
             'receiver_id' => adminId(),
-            'type' => 'admin',
+            'type' => 'admin_create_post',
         ]);
         return ['message' => 'added Successfully',
             'data' => [PostResource::make($post)],
@@ -93,16 +93,39 @@ class PostController extends Controller
         ];
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Post $post
-     * @return string[]
-     */
-    public function update(Request $request, Post $post)
-    {
-//        dd($request->title);
+//    /**
+//     * Update the specified resource in storage.
+//     *
+//     * @param \Illuminate\Http\Request $request
+//     * @param \App\Models\Post $post
+//     * @return string[]
+//     */
+//    public function update(Request $request, Post $post)
+//    {
+//        sendNotificationToAllOrders($post);
+//        $post->update([
+//            'title' => $request->title,
+//            'description' => $request->description,
+//            'category_id' => $request->category_id,
+//            'is_donation' => $request->is_donation,
+//        ]);
+//
+//        if ($request->hasFile('assets')) {
+//            foreach ($request->assets as $file) {
+//                $image_name = $file->store('public', 'public');
+//                $post->media()->create([
+//                    'post_id' => $post->id,
+//                    'name' => $image_name,
+//                ]);
+//            }
+//        }
+//        return ['message' => 'You have successfully delete your order.'];
+//
+//    }
+//
+//
+    public function updatePost(Request $request,Post $post){
+//        dd($request->all());
         $post->update([
             'title' => $request->title,
             'description' => $request->description,
@@ -119,7 +142,9 @@ class PostController extends Controller
                 ]);
             }
         }
-        return ['message' => 'You have successfully delete your order.'];
+        sendNotificationsWhenPostUpdate($post->id);
+
+        return ['message' => 'You have edit your post.'];
 
     }
 
@@ -132,8 +157,6 @@ class PostController extends Controller
      */
     public function changePostStatus(Request $request, Post $post)
     {
-
-//        dd($post->id);
         $user = auth('sanctum')->user();
         if (!$post->second_user) {
             if ($post->first_user === $user->getAuthIdentifier()) {
@@ -149,14 +172,14 @@ class PostController extends Controller
                     Notification::create([
                         'post_id' => $post->id,
                         'sender_id' => Auth::id(),
-                        'receiver_id' => $post->second_user_token,
+                        'receiver_id' => $post->second_user,
                         'type' => 'accept_request',
                     ]);
                     Notification::create([
                         'post_id' => $post->id,
                         'sender_id' => Auth::id(),
                         'receiver_id' => adminId(),
-                        'type' => 'admin',
+                        'type' => 'admin_accept_request',
                     ]);
 
                     return ['message' => 'updated Successfully',
@@ -185,11 +208,35 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $user = Auth::id();
-        if ($post->user_id == $user) {
-            $post->delete();
-            return ['message' => 'You have successfully delete your post.'];
-        } else
-            return ['message' => 'You can not delete this post.'];
+        if ($post->second_user===null){
+            if ($post->first_user == $user) {
+                $post->delete();
+               $orders= $this->getPostOrders($post->id);
+               foreach ($orders as $order){
+                   $order->delete();
+                   $user_order = \App\Models\User::where('id', $order->user_id)->first();
+                   $token = $user_order->fcm_token;
+                   $notification = Notification::where([['post_id', '=', $post->id], ['type', '=', 'delete_Post']
+                       , ['receiver_id', '=', $user_order->id]])->first();
+                   if ($notification) {
+                       $notification->update([
+                           'updated_at'=>now()
+                       ]);
+                   } else
+                       Notification::create([
+                           'post_id' => $post->id,
+                           'sender_id' => $post->first_user,
+                           'receiver_id' => $user_order->id,
+                           'type' => 'update_Post',
+                       ]);
+               }
+
+                return ['message' => 'You have successfully delete your post.',200];
+            } else
+                return ['message' => 'You can not delete this post.',404];
+        }else
+            return ['message' => 'You can not delete this post , this post is completed.',404];
+
     }
 
     public function restorePost($id)
@@ -211,7 +258,7 @@ class PostController extends Controller
             $request->limit = 10;
         }
         $post = Post::postcategory($request->category_id)->donation($id)->status($request->postStatus)
-            ->orderBy('created_at', "desc")->paginate($request->limit);
+            ->orderBy('updated_at', "desc")->paginate($request->limit);
         return new PostCollection($post);
     }
 
@@ -220,7 +267,7 @@ class PostController extends Controller
         if (!isset($request->limit) || empty($request->limit)) {
             $request->limit = 10;
         }
-        $post = Post::donation($id)->status($request->postStatus)->orderBy('created_at', "desc")->paginate($request->limit);
+        $post = Post::donation($id)->status($request->postStatus)->orderBy('updated_at', "desc")->paginate($request->limit);
 
         return new PostCollection($post);
     }
@@ -243,7 +290,7 @@ class PostController extends Controller
         if (!isset($request->limit) || empty($request->limit)) {
             $request->limit = 10;
         }
-        $post = Post::donation($request->is_donation)->status($request->status)->postcategory($request->category)->data($request->data)->orderBy('created_at', "desc")->paginate($request->limit);
+        $post = Post::donation($request->is_donation)->status($request->status)->postcategory($request->category)->data($request->data)->orderBy('updated_at', "desc")->paginate($request->limit);
         return new PostCollection($post);
 
     }

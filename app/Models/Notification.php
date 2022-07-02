@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Notification extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $appends = [
         'sender_name',
@@ -51,6 +53,6 @@ class Notification extends Model
 
     public function getSentTimeAttribute()
     {
-        return $this->created_at->diffForHumans(now());
+        return $this->updated_at?$this->updated_at->diffForHumans():"lll";
     }
 }

@@ -22,8 +22,8 @@ class Order extends Model
     public function getGetDataAttribute()
     {
         return [
-            'id' => $this->id,
             'status' => 1,
+            'id' => $this->id,
             'massage' => $this->massage,
             'post_id' => $this->post_id,
             'user_id' => $this->user_id,
@@ -31,8 +31,9 @@ class Order extends Model
             'user_image' => $this->user_image_link,
             'created_at' => $this->created_at,
             'user_phone_number' => $this->user?$this->user->phone_number:"0",
+            'order_created_at' => $this->created_at->diffForHumans(now()),
+            'order_updated_at' => $this->updated_at->diffForHumans(now()),
             'post' => PostResource::make($this->order_post),
-            'published_at' => $this->created_at->diffForHumans(now()),
 
         ];
     }

@@ -7,19 +7,20 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 
-class PostController extends Controller
+class ProfileController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
-    public function index()
+    public function index(User $user)
     {
-        $posts = Post::all();
-        return view('post.index', compact('posts'));
+        $posts=Post::where("first_user",$user->id)->get();
+        return view('userProfile.index', compact('posts'));
     }
 
     public function getData(Request $request)
@@ -171,6 +172,8 @@ class PostController extends Controller
     public function showImages(Request $request)
     {
         $posts = Post::where('id', $request->id)->first();
+//        dd($posts->id);
+
         return response()->json(['view' => view('post.showPostImages', compact('posts',))->render(), 'Post_id' => $posts->id]);
     }
 

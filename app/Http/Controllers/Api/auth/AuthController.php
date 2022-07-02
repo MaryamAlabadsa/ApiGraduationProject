@@ -50,7 +50,7 @@ class AuthController extends Controller
                 'post_id' => 0,
                 'sender_id' => $user->id,
                 'receiver_id' => adminId(),
-                'type' => 'admin',
+                'type' => 'admin_register',
             ]);
         }
 

@@ -57,10 +57,16 @@
                                     address
                                 </th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                    num donation post
+                                    posts
                                 </th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                    num request post
+                                    requests
+                                </th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    created at
+                                </th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                   actions
                                 </th>
                             </tr>
                             </thead>
@@ -97,7 +103,8 @@
                     {"mData": "address"},
                     {"mData": "num_donation_posts"},
                     {"mData": "num_request_posts"},
-                    {"mData": "created_at"}
+                    {"mData": "created_at"},
+                    {"mData": "actions"}
                 ]
             });
         });

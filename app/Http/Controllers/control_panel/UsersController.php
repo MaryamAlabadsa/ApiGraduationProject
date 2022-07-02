@@ -81,7 +81,6 @@ class UsersController extends Controller
         $num_donation_posts= count($this->DonationPosts($userId));
         $num_request_posts= count($this->RequestPosts($userId));
 
-
         return response()->json(['view' => view('profile.userProfileCard', compact('user', 'num_donation_posts','num_request_posts'))->render(), 'User_id' =>$userId]);
     }
 

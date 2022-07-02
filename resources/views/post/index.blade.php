@@ -100,7 +100,7 @@
                     $("[rel='tooltip']").tooltip();
                 },
                 "columnDefs": [
-                    {"sortable": false, "targets": [0, 4]}
+                    {"sortable": true, "targets": [0, 4]}
                 ],
                 "aoColumns": [
                     {"mData": "user"},

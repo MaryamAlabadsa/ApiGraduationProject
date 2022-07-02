@@ -19,23 +19,17 @@ class NotificationController extends Controller
     public function index()
     {
         $user = Auth::id();
-//        $notif = Notification::
-//        where('receiver_id', $user)
-//            ->orderBy('created_at', "desc")
-//            ->get()
-//            ->groupBy('post_id');
 
-
-        $notif = Notification::selectRaw('post_id,created_at,id,sender_id,type,receiver_id')
+        $notif = Notification::selectRaw('post_id,created_at,id,sender_id,type,receiver_id,updated_at')
             ->where('receiver_id', $user)
-            ->groupBy('post_id', 'created_at', 'id', 'sender_id', 'type', 'receiver_id')
-            ->orderByDesc('created_at')
+            ->groupBy('post_id', 'created_at', 'id', 'sender_id', 'type', 'receiver_id','updated_at')
+            ->orderByDesc('updated_at')
             ->get();
 
         return
             [
                 'message' => 'done',
-                'data' => NotifictionResource::collection($notif),
+                'data' => $notif,
             ];
     }
 

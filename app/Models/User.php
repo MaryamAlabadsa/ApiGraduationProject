@@ -36,21 +36,19 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getPostDisplayDataAttribute()
 
     {
-        dd('99');
+//        dd('99');
         return [
             'id' => $this->id,
             'user' => $this->show_user_image_name,
             'email' => $this->email,
             'phoneNumber' => $this->phone_number,
             'address' => $this->address,
-            'num_donation_posts' => $this->email,
-//            'num_donation_posts' => $this->num_donation_posts,
-            'num_request_posts' => $this->email,
-//            'num_request_posts' => $this->num_request_posts,
+            'num_donation_posts' => $this->num_posts,
+            'num_request_posts' => $this->num_requests,
             'created_at' => $this->published_at,
+            'actions' => $this->btn_details,
         ];
     }
-
     public function scopeSearch($query, $searchWord)
     {
         return $query->where('id', 'like', "%" . $searchWord . "%")
@@ -71,26 +69,43 @@ class User extends Authenticatable implements MustVerifyEmail
                                 </div>';
     }
 
-    public function getNumDonationPostsAttribute()
+    public function getNumPostsAttribute()
     {
-        $DonationPosts = count(DonationPosts($this->id));
+
         return ' <div class="my-auto">
-                                    <h6 class="mb-0 text-sm">' . $DonationPosts. '</h6>
+                                    <h6 class="mb-0 text-sm">' .  $this->posts. '</h6>
                                   </div>
                                 ';
     }
 
-    public function getNumRequestPostsAttribute()
+    public function getNumRequestsAttribute()
     {
-        $DonationPosts = count(RequestPosts($this->id));
+
         return ' <div class="my-auto">
-                                    <h6 class="mb-0 text-sm">' . $DonationPosts. '</h6>
+                                    <h6 class="mb-0 text-sm">' . $this->requests. '</h6>
                                   </div>
                                 ';
     }
+    public function getPostsAttribute(){
+        $posts=Post::where('first_user',$this->id)->get();
+        $PostsCount = count($posts);
+        return $PostsCount;
+    }
+    public function getRequestsAttribute(){
+        $order=Order::where('user_id',$this->id)->get();
+        $OrdersCount = count($order);
+        return $OrdersCount;
+    }
+
     public function getPublishedAtAttribute()
     {
         return $this->created_at->diffForHumans(now());
+    }
+
+    public function getBtnDetailsAttribute()
+    {
+        return '<button type="button"class="btn bg-gradient-warning w-90 mb-0 toast-btn"
+        ><a href="/profile/$this->id" > More Details</a> </button>';
     }
     /**
      * The attributes that should be hidden for arrays.

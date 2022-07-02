@@ -15,6 +15,7 @@ class NotifictionResource extends JsonResource
     public function toArray($request)
     {
         return [
+//            dd($this->id),
             'id' => $this->id,
             'post_id' => $this->post_id,
             'sender_id' => $this->sender_id,
@@ -22,6 +23,10 @@ class NotifictionResource extends JsonResource
             'type' => $this->type,
             'sender_name' => $this->sender_name,
             'sent_at' => $this->created_at->diffForHumans(now()),
+            'ia_deleted' => $this->deleted_at
+
+//            'published_at' => $this->updated_at->diffForHumans(now()),
+
 
         ];
     }

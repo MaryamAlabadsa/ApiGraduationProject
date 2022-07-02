@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\Notification;
 use App\Models\Order;
 use App\Models\Post;
+use Illuminate\Support\Facades\Auth;
 
 function sendnotification($to, $title, $message, $datapayload = [])
 {
@@ -65,4 +67,39 @@ function DonationPosts($userId)
         array_push($data, $all_sorted_datum->get_data);
     }
     return $data;
+}
+
+function getPostOrders($post_id)
+{
+    $post = Post::where('id', $post_id)->first();
+    $orders = Order::where('post_id', $post->id)->get();
+    return $orders;
+}
+
+function sendNotificationsWhenPostUpdate($post_id)
+{
+    $post = Post::where('id', $post_id)->first();
+
+    $orders = getPostOrders($post_id);
+    foreach ($orders as $order) {
+        $user = \App\Models\User::where('id', $order->user_id)->first();
+        $token = $user->fcm_token;
+        if ($token) {
+            sendnotification($token, "update Post", $post->first_user_name . ' update his post ', ['post_id' => $post->id]);
+        }
+        $notification = Notification::where([['post_id', '=', $post->id], ['type', '=', 'update_Post'], ['receiver_id', '=', $user->id]])->first();
+        if ($notification) {
+           $notification->update([
+               'updated_at'=>now()
+           ]);
+        } else
+            Notification::create([
+                'post_id' => $post->id,
+                'sender_id' => $post->first_user,
+                'receiver_id' => $user->id,
+                'type' => 'update_Post',
+            ]);
+
+
+    }
 }

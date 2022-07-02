@@ -18,6 +18,7 @@ class PostResource extends JsonResource
     {
 
         return [
+//            dd("llll"),
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
@@ -37,7 +38,8 @@ class PostResource extends JsonResource
             'Order_id' => $this->is_ordered == true ? $this->is_ordered->id: 0,
             'is_he_the_owner_of_the_post' => $this->first_user===Auth::id()?true:false,
             'is_completed' => $this->second_user===null?false:true,
-            'published_at' => $this->created_at->diffForHumans(now()),
+            'post_created_at' => $this->created_at->diffForHumans(now()),
+            'post_updated_at' => $this->updated_at->diffForHumans(now()),
             'the_owner_is_login' => $this->first_user==Auth::id()?true:false,
         ];
     }

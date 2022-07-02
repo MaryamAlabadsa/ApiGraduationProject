@@ -32,6 +32,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/restoreOrder/{id}', [\App\Http\Controllers\Api\Order\OrderController::class, 'restoreOrder']);
     Route::post('/searchPost', [\App\Http\Controllers\Api\Post\PostController::class, 'scopeSearchPostData']);
     Route::put('/changePostStatus/{post}', [\App\Http\Controllers\Api\Post\PostController::class, 'changePostStatus']);
+    Route::post('/editPost/{post}', [\App\Http\Controllers\Api\Post\PostController::class, 'updatePost']);
 
     Route::post('myDonationPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getMyDonationPosts']);
     Route::post('myRequestsPosts', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'getMyRequestPosts']);
@@ -49,7 +50,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     //log out
     Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('changePassword', [NewPasswordController::class, 'changePasswo      rd']);
+    Route::post('changePassword', [NewPasswordController::class, 'changePassword']);
     Route::post('updateUserImage', [AuthController::class, 'updateUserImage']);
     Route::get("sendDeviceToken/{token}", function ($token) {
         Illuminate\Support\Facades\Auth::user()->update(['fcm_token'=>$token]);
