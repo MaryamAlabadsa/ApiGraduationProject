@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\auth;
 
 use App\Http\Resources\User\UserResource;
 use Illuminate\Support\Facades\Validator;
@@ -17,7 +17,6 @@ class NewPasswordController extends Controller
 {
     public function forgotPassword(Request $request)
     {
-
         $request->validate([
             'email' => 'required|email',
         ]);
@@ -72,7 +71,7 @@ class NewPasswordController extends Controller
 
     public function changePassword(Request $request)
     {
-
+        setLang($request->lang);
         $validator = Validator::make($request->all(), [
             'old_password' => 'required',
             'password' => 'required|min:8|max:100',
@@ -87,7 +86,7 @@ class NewPasswordController extends Controller
         $user = $request->user();
         if (Hash::check($request->old_password, $user->password)) {
             $user->update([
-                'password'=>Hash::make($request->password)
+                'password' => Hash::make($request->password)
             ]);
             return response()->json([
                 'message' => 'password successfully updated ',

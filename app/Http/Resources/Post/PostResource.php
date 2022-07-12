@@ -26,7 +26,7 @@ class PostResource extends JsonResource
             'category_id' => $this->category_id,
             'first_user_id' => $this->first_user,
             'second_user_id' => $this->second_user_data?$this->second_user_data->id:0,
-            'category_name' => $this->category_name,
+            'category_name' => $this->getCategoryNameAttribute($request->lang),
             'number_of_requests' => $this->number_of_requests,
             'first_user_name' => $this->first_user_name,
             'second_user_name' => $this->second_user_name,

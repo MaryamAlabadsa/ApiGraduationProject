@@ -14,6 +14,8 @@ class OrderRequest extends FormRequest
      */
     public function authorize()
     {
+        setLang($this->lang);
+
         return true;
     }
 
@@ -33,9 +35,6 @@ class OrderRequest extends FormRequest
     public function messages()
     {
         return [
-
-            'post_id.exists:posts,id' => 'post_id is not exist',
-//            'user_id.exists:users,id' => 'this user id not exist',
 
         ];
     }

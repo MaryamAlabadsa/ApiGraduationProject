@@ -45,7 +45,6 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-//        dd($request->all());
         $post = Post::create([
             'title' => $request->title,
             'description' => $request->description,
@@ -93,39 +92,9 @@ class PostController extends Controller
         ];
     }
 
-//    /**
-//     * Update the specified resource in storage.
-//     *
-//     * @param \Illuminate\Http\Request $request
-//     * @param \App\Models\Post $post
-//     * @return string[]
-//     */
-//    public function update(Request $request, Post $post)
-//    {
-//        sendNotificationToAllOrders($post);
-//        $post->update([
-//            'title' => $request->title,
-//            'description' => $request->description,
-//            'category_id' => $request->category_id,
-//            'is_donation' => $request->is_donation,
-//        ]);
-//
-//        if ($request->hasFile('assets')) {
-//            foreach ($request->assets as $file) {
-//                $image_name = $file->store('public', 'public');
-//                $post->media()->create([
-//                    'post_id' => $post->id,
-//                    'name' => $image_name,
-//                ]);
-//            }
-//        }
-//        return ['message' => 'You have successfully delete your order.'];
-//
-//    }
-//
-//
-    public function updatePost(Request $request,Post $post){
-//        dd($request->all());
+    public function updatePost(Request $request, Post $post)
+    {
+        setLang($request->lang);
         $post->update([
             'title' => $request->title,
             'description' => $request->description,
@@ -157,6 +126,8 @@ class PostController extends Controller
      */
     public function changePostStatus(Request $request, Post $post)
     {
+        setLang($request->lang);
+
         $user = auth('sanctum')->user();
         if (!$post->second_user) {
             if ($post->first_user === $user->getAuthIdentifier()) {
@@ -205,52 +176,68 @@ class PostController extends Controller
      * @param \App\Models\Post $post
      * @return array
      */
-    public function destroy(Post $post)
+    public function destroy(Post $post,Request $request)
     {
+        setLang($request->lang);
+
         $user = Auth::id();
-        if ($post->second_user===null){
+        if ($post->second_user === null) {
             if ($post->first_user == $user) {
                 $post->delete();
-               $orders= $this->getPostOrders($post->id);
-               foreach ($orders as $order){
-                   $order->delete();
-                   $user_order = \App\Models\User::where('id', $order->user_id)->first();
-                   $token = $user_order->fcm_token;
-                   $notification = Notification::where([['post_id', '=', $post->id], ['type', '=', 'delete_Post']
-                       , ['receiver_id', '=', $user_order->id]])->first();
-                   if ($notification) {
-                       $notification->update([
-                           'updated_at'=>now()
-                       ]);
-                   } else
-                       Notification::create([
-                           'post_id' => $post->id,
-                           'sender_id' => $post->first_user,
-                           'receiver_id' => $user_order->id,
-                           'type' => 'update_Post',
-                       ]);
-               }
+                $orders = Order::where('post_id', $post->id)->get();
 
-                return ['message' => 'You have successfully delete your post.',200];
+                foreach ($orders as $order) {
+                    $order->delete();
+                    $user_order = \App\Models\User::where('id', $order->user_id)->first();
+                    $token = $user_order->fcm_token;
+                    if ($token) {
+                        sendnotification($token, "update Post", $post->first_user_name . ' delete his post ', ['post_id' => $post->id]);
+                    }
+                    $notification = Notification::where([['post_id', '=', $post->id],["deleted_at", '!=', null], ['type', '=', 'delete_Post'], ['receiver_id', '=', $user_order->id]])->first();
+                    if ($notification) {
+                        $notification->restore();
+//                        $notification->update([
+//                            'type' => 'delete_post',
+//                            'updated_at' => now()
+//                        ]);
+                    } else
+                        Notification::create([
+                            'post_id' => $post->id,
+                            'sender_id' => $post->first_user,
+                            'receiver_id' => $user_order->id,
+                            'type' => 'delete_post',
+                        ]);
+                }
+
+                return ['message' => 'You have successfully delete your post.', 200];
             } else
-                return ['message' => 'You can not delete this post.',404];
-        }else
-            return ['message' => 'You can not delete this post , this post is completed.',404];
+                return ['message' => 'You can not delete this post.', 404];
+        } else
+            return ['message' => 'You can not delete this post , this post is completed.', 404];
 
     }
 
-    public function restorePost($id)
+    public function restorePost(Request $request,$id)
     {
+        setLang($request->lang);
+
         $deletePost = Post::onlyTrashed()->where([["deleted_at", '!=', null], ['id', '=', $id]])->first();
+        $orders=Order::onlyTrashed()->where([["deleted_at", '!=', null], ['post_id', '=', $id]])->get();
+        $notifications=Notification::where([["type", '=', "delete_post"], ['post_id', '=', $id]])->get();
         if ($deletePost) {
             $deletePost->restore();
+            foreach ($orders as $order){
+                $order->restore();
+            }
+            foreach ($notifications as $notification){
+                $notification->delete();
+            }
             return ['message' => 'You have successfully restore your post.'];
 
         }
         return ['message' => 'You can not restore this order.'];
 
     }
-
 
     public function getPostByCategory($id, Request $request)
     {
@@ -270,19 +257,6 @@ class PostController extends Controller
         $post = Post::donation($id)->status($request->postStatus)->orderBy('updated_at', "desc")->paginate($request->limit);
 
         return new PostCollection($post);
-    }
-
-    public function getPostOrders(Request $request)
-    {
-        $posts = Post::where('id', $request->post_id)->first();
-
-        return response()->json(
-            [
-                $posts->post_orders,
-                new PostResource($posts)
-            ]
-        );
-
     }
 
     public function scopeSearchPostData(Request $request)

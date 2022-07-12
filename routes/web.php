@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -33,7 +34,8 @@ Route::resource('users',\control_panel\UsersController::class);
 Route::get('/getUsersData', [\App\Http\Controllers\control_panel\UsersController::class,'getData'])->name('users.getData');
 
 
-Route::get('/profile/{user}', [\App\Http\Controllers\control_panel\ProfileController::class,'index']);
-Route::get('/getProfileUsersData', [\App\Http\Controllers\control_panel\ProfileController::class,'getData'])->name('profile.getData');
+Route::get('/profilePosts/{id}', [\App\Http\Controllers\control_panel\ProfileController::class,'indexPosts']);
+Route::get('/getProfileUsersPostsData/{id}', [\App\Http\Controllers\control_panel\ProfileController::class,'getPostsData'])->name('profile.getPostsData');
 
-
+Route::get('/profileRequests/{id}', [\App\Http\Controllers\control_panel\ProfileController::class,'indexRequests']);
+Route::get('/getProfileUsersRequestsData/{id}', [\App\Http\Controllers\control_panel\ProfileController::class,'getRequestsData'])->name('profile.getRequestsData');

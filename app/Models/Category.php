@@ -10,7 +10,8 @@ class Category extends Model
     use HasFactory;
     protected $fillable = [
         'name',
-        'image'
+        'image',
+        'name_ar'
     ];
     //one Category has many posts
     public function  posts(){

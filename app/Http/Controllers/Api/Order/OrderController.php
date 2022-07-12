@@ -35,6 +35,7 @@ class OrderController extends Controller
      */
     public function store(OrderRequest $request)
     {
+
         $token = Post::where('id', $request->post_id)->first()->first_user_token;
 
         $deleteOrder = Order::onlyTrashed()->where([["deleted_at", '!=', null],
@@ -42,7 +43,6 @@ class OrderController extends Controller
         if ($deleteOrder) {
             $deleteOrder->restore();
             $order = $deleteOrder->update(['massage' => $request->massage]);
-
         } else {
             $order = Order::create([
                 'massage' => $request->massage,
@@ -50,15 +50,14 @@ class OrderController extends Controller
                 'user_id' => Auth::id(),
             ]);
         }
-        $receiver_id=Post::where('id', $request->post_id)->first()->first_user;
-        $deleteNotification = Notification::onlyTrashed()->where([["type", '=', "add_request"],
-            ["deleted_at", '!=', null], ['post_id', '=', $request->post_id],['receiver_id','=',$receiver_id]])->first();
-        if ($deleteOrder) {
-            $deleteNotification->restore();
+        $receiver_id = Post::where('id', $request->post_id)->first()->first_user;
+        $deleteNotification = Notification::where([["type", '=', "delete_request"],
+            ['post_id', '=', $request->post_id], ['receiver_id', '=', $receiver_id]])->first();
+        if ($deleteNotification) {
             $deleteNotification->update([
                 'type' => 'add_request',
             ]);
-        }else{
+        } else {
             Notification::create([
                 'post_id' => $request->post_id,
                 'sender_id' => Auth::id(),
@@ -66,9 +65,9 @@ class OrderController extends Controller
                 'type' => 'add_request',
             ]);
         }
-        sendnotification($token, 'add new request', Auth::user()->name  . ' send you request', ['post_id' => $request->post_id]);
+        sendnotification($token, 'add new request', Auth::user()->name . ' send you request', ['post_id' => $request->post_id]);
 
-            Notification::create([
+        Notification::create([
             'post_id' => $request->post_id,
             'sender_id' => Auth::id(),
             'receiver_id' => adminId(),
@@ -105,9 +104,9 @@ class OrderController extends Controller
      */
     public function update(Request $request, Order $order)
     {
-//        dd($request->i);
+        setLang($request->lang);
+
         $order->update(['massage' => $request->massage]);
-//        $user = Auth::user()->update(['name' => $request->name]);
 
         return response()->json(
             [
@@ -122,22 +121,19 @@ class OrderController extends Controller
      * @param \App\Models\Order $order
      * @return array
      */
-    public function destroy(Order $order)
+    public function destroy(Order $order, Request $request)
     {
+        setLang($request->lang);
+
         $user = Auth::id();
         $token = Post::where('id', $order->post_id)->first()->first_user_token;
 
         if ($order->user_id == $user) {
             $order->delete();
             $notification = Notification::where([['sender_id', '=', $user], ['post_id', '=', $order->post_id]])->first();
-            $notification->delete();
             $notification->update([
                 'type' => 'delete_request',
             ]);
-
-            $notification = Notification::where([['sender_id', '=', $user], ['post_id', '=', $order->post_id], ["type", '=', 'admin']])->first();
-            if ($notification)
-                $notification->delete();
             sendnotification($token, 'delete request', Auth::user()->name . ' deleted her/his request .', ['post_id' => $order->post_id]);
 
             return ['message' => 'You have successfully delete your order.',
@@ -149,8 +145,10 @@ class OrderController extends Controller
 
     }
 
-    public function restoreOrder($id)
+    public function restoreOrder($id,Request $request)
     {
+        setLang($request->lang);
+
         $deleteOrder = Order::onlyTrashed()->where([["deleted_at", '!=', null], ['id', '=', $id]])->first();
         if ($deleteOrder) {
             $deleteOrder->restore();

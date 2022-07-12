@@ -3,6 +3,7 @@
 use App\Models\Notification;
 use App\Models\Order;
 use App\Models\Post;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 
 function sendnotification($to, $title, $message, $datapayload = [])
@@ -102,4 +103,8 @@ function sendNotificationsWhenPostUpdate($post_id)
 
 
     }
+}
+function setLang($langg){
+    $lang=$langg?$langg:'en';
+    App::setLocale($lang);
 }

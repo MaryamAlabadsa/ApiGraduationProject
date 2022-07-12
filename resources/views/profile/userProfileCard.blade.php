@@ -6,6 +6,6 @@
         <h6> {{$user->posts}} Posts </h6>
         <h6> {{$user->requests}} Requests </h6>
         <button type="button"class="btn bg-gradient-warning w-50 mb-0 toast-btn"
-        ><a href="/profile/{{$user->id}}" > More Details</a> </button>';
+        ><a href="/profilePosts/{{$user->id}}" > More Details</a> </button>';
     </figcaption>
 </figure>

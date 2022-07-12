@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
@@ -17,10 +18,11 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+//        dd($request->lang);
+        setLang($request->lang);
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            //  'img' => 'required|text',
             'phone_number' => 'required|numeric|min:10',
             'address' => 'required|string|max:255',
             'Longitude' => 'string|max:255',
@@ -31,7 +33,6 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-//            'img' => $i->store('public', 'public'),
             'phone_number' => $request->phone_number,
             'address' => $request->address,
             'Longitude' => $request->Longitude,
@@ -44,7 +45,7 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('authtoken');
-        if (adminToken()!=null){
+        if (adminToken() != null) {
             sendnotification(adminToken(), "new user registered", $user->name . " create new account", ['user_id' => $user->id]);
             Notification::create([
                 'post_id' => 0,
@@ -65,7 +66,6 @@ class AuthController extends Controller
         );
 
     }
-
 
     public function login(LoginRequest $request)
     {
@@ -112,13 +112,15 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        if( $request->user()->id==32){
+        setLang($request->lang);
+
+        if ($request->user()->id == 32) {
             return response()->json(
                 [
                     'message' => 'Logged out'
                 ]
             );
-        }else{
+        } else {
             $request->user()->tokens()->delete();
             $request->user()->update(['fcm_token' => null]);
 
@@ -134,6 +136,8 @@ class AuthController extends Controller
 
     public function updateUserImage(Request $request)
     {
+        setLang($request->lang);
+
         $user = Auth::user()->update(['img' => $request->image->store('public', 'public')]);
         return response()->json(
             [
@@ -145,9 +149,27 @@ class AuthController extends Controller
         );
     }
 
-    public function updateUserName(Request $request)
+    public function updateUserData(Request $request)
     {
-        $user = Auth::user()->update(['name' => $request->name]);
+        setLang($request->lang);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone_number' => 'required|numeric|min:10',
+            'address' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255',
+        ]);
+
+        if (Auth::user()->email != $request->email) {
+            $request->validate([
+                'email' => 'required|string|email|max:255|unique:users',
+            ]);
+            Auth::user()->update(['email' => $request->email]);
+        }
+
+        Auth::user()->update(['name' => $request->name]);
+        Auth::user()->update(['phone_number' => $request->phone_number]);
+        Auth::user()->update(['address' => $request->address]);
+
         return response()->json(
             [
                 'message' => 'updated Successfully',

@@ -8,7 +8,7 @@
                 <div class="d-flex flex-column justify-content-center">
                     <h6 class="text-sm font-weight-normal mb-1">
                         <img src="{{$order->user_image_link}}" class="avatar avatar-xl  me-3 " alt="">
-                        <span class="font-weight-bold">{{$order->user_name}}</span>
+                        <span class="font-weight-bold"><a href="/profilePosts/{{$order->user_id}}">{{$order->user_name}}</a></span>
                     </h6>
                     <p class="text-2xl text-primary mb-0">
                         {{$order->massage}}

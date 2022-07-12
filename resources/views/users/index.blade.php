@@ -39,7 +39,7 @@
                 </div>
                 <div class="card-body px-0 pb-2">
                     <div class="table-responsive p-3">
-                        <table id="dataTable1" class="table align-items-center mb-0">
+                        <table id="dataTable" class="table align-items-center mb-0">
                             <thead>
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">id
@@ -82,9 +82,11 @@
 @endsection
 
 @section('script')
+    <script src="{{ asset('control_panel_style/ajax/post.js') }}"></script>
+
     <script type="text/javascript">
         $(document).ready(function () {
-            var table = $('#dataTable1').DataTable({
+            var table = $('#dataTable').DataTable({
                 "processing": true,
                 "serverSide": true,
                 "ajax": "{{ route('users.getData') }}",
@@ -105,7 +107,9 @@
                     {"mData": "num_request_posts"},
                     {"mData": "created_at"},
                     {"mData": "actions"}
-                ]
+                ],
+                responsive: true
+
             });
         });
     </script>

@@ -16,9 +16,11 @@ class CategoryResource extends JsonResource
      */
     public function toArray($request)
     {
+//        dd($request->all());
         return [
             'id' => $this->id,
-            'name' => ucfirst($this->name),
+            'name' =>$request->lang?($request->lang=='ar'?$this->name_ar:$this->name): ucfirst($this->name),
+//            'name_ar' => ucfirst($this->name_ar),
             'image' => $this->image_link,
         ];
     }

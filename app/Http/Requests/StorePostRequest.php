@@ -8,6 +8,8 @@ class StorePostRequest extends FormRequest
 {
     public function authorize()
     {
+        setLang($this->lang);
+
         return true;
     }
 
@@ -22,8 +24,10 @@ class StorePostRequest extends FormRequest
             'title' => 'required|string',
             'description' => 'sometimes|required|string',
             'is_donation' => 'required|numeric|in:0,1',
- //            'assets' => 'required|array',
-//            'assets.*' => 'required|mimes:jpg,png,jpeg',
+            'assets' => 'required|array',
+            'assets.*' => 'required|mimes:jpg,png,jpeg',
+            'category_id' => 'required|numeric|exists:categories,id',
+
         ];
     }
 

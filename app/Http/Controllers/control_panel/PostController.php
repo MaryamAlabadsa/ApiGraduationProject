@@ -24,7 +24,7 @@ class PostController extends Controller
 
     public function getData(Request $request)
     {
-//        dd($areas);
+//        dd($request->all());
         $columns = array(
 
 //            array( 'db' => 'userName',          'dt' => 1 ),
@@ -37,22 +37,32 @@ class PostController extends Controller
         $start = (int)$request->start;
         $length = (int)$request->length;
         $order = $request->order[0]["column"];
-        $direction = $request->order[0]["dir"];
         $search = trim($request->search["value"]);
-
+        $category = $request->category ? $request->category : null;
+        $status = ($request->status || $request->status == 0) ? $request->status : null;
+        $donation = ($request->donation || $request->donation == 0) ? $request->donation : null;
 
         $value = array();
 
         if (!empty($search)) {
-            $count = Post::search($search)
+            $count = Post::postcategory($category)
+                ->donation($donation)
+                ->status($status)->search($search)
                 ->count();
-            $items = Post::search($search)
-                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+            $items = Post::postcategory($category)
+                ->donation($donation)
+                ->status($status)->search($search)
+                ->limit($length)->offset($start)->orderBy('created_at', "desc")
                 ->get();
         } else {
-            $count = Post::count();
+            $count = Post::postcategory($category)
+                ->donation($donation)
+                ->status($status)->count();
             $items = Post::
-            limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+            postcategory($category)
+                ->donation($donation)
+                ->status($status)
+                ->limit($length)->offset($start)->orderBy('created_at', "desc")
                 ->get();
         }
         foreach ($items as $index => $item) {

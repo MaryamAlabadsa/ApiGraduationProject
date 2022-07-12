@@ -18,6 +18,7 @@ class LoginRequest extends FormRequest
      */
     public function authorize()
     {
+        setLang($this->lang);
         return true;
     }
 
@@ -29,8 +30,9 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => 'required|string|email',
             'password' => ['required', 'string'],
+
         ];
     }
 

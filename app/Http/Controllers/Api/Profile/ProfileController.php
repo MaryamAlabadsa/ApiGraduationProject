@@ -74,7 +74,10 @@ class ProfileController extends Controller
                 'message' => 'returned successfully',
                 'data' => [
                     'user_image' => $user_image,
-                    'user_name' => $user->name,
+                    'user_name' => Auth::user()->name,
+                    'user_email' => Auth::user()->email,
+                    'user_phone' => Auth::user()->phone_number,
+                    'user_address' => Auth::user()->address,
                     'num_donation_post' => count($this->DonationPosts($id)),
                     'num_request_post' => count($this->RequestPosts($id)),
                 ]
@@ -96,6 +99,9 @@ class ProfileController extends Controller
                 'data' => [
                     'user_image' => $user_image,
                     'user_name' => Auth::user()->name,
+                    'user_email' => Auth::user()->email,
+                    'user_phone' => Auth::user()->phone_number,
+                    'user_address' => Auth::user()->address,
                     'num_donation_post' => count($this->DonationPosts($userId)),
                     'num_request_post' => count($this->RequestPosts($userId)),
                 ]

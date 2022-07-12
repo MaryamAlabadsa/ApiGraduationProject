@@ -46,7 +46,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'num_donation_posts' => $this->num_posts,
             'num_request_posts' => $this->num_requests,
             'created_at' => $this->published_at,
-            'actions' => $this->btn_details,
+            'actions' => $this->btn_details. '&nbsp'. $this->delete_user,
         ];
     }
     public function scopeSearch($query, $searchWord)
@@ -105,8 +105,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getBtnDetailsAttribute()
     {
         return '<button type="button"class="btn bg-gradient-warning w-90 mb-0 toast-btn"
-        ><a href="/profile/$this->id" > More Details</a> </button>';
+        ><a href="/profilePosts/'.$this->id.'" > More Details</a> </button>';
     }
+    public function getDeleteUserAttribute()
+    {
+        if ($this->second_user == null) {
+            return '<button  type="button" class="btn bg-gradient-faded-danger w-40 mb-0 toast-btn " data-toggle="tooltip"
+             data-placement="top" rel="tooltip" title="Delete '.$this->name.'" onclick="deleteItem(\''.route('users.destroy',$this->id).'\')"><i class="fa fa-trash"></i></button>';
+
+        }  }
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -136,7 +143,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getImageLinkAttribute()
     {
-        return $this->img ? url('/storage/' . $this->img) : url("control_panel_style/images/auth/user.jpg");
+        return $this->img ? url('/storage/' . $this->img) : url("/control_panel_style/images/faces/profile/profile.jpg");
     }
 
     //one user has many notifications

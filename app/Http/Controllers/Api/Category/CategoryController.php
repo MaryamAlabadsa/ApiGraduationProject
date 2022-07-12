@@ -16,9 +16,9 @@ class CategoryController extends Controller
      *
      * @return array
      */
-    public function index()
+    public function index(Request $request)
     {
-//        dd('kkk');
+
          return
         [
             'message' => 'done',
@@ -36,9 +36,11 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
+            'name_ar' => 'required|string',
         ]);
         $category = Category::create([
             'name' => $request->name,
+            'name_ar' => $request->name_ar,
             'image' => $request->image->store('public', 'public'),
         ]);
 

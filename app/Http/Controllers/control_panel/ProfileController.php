@@ -17,56 +17,112 @@ class ProfileController extends Controller
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
-    public function index(User $user)
+    public function indexPosts($id)
     {
-        $posts=Post::where("first_user",$user->id)->get();
-        return view('userProfile.index', compact('posts'));
+        return view('userProfile.index', compact('id'));
     }
 
-    public function getData(Request $request)
+    public function getPostsData(Request $request, $id)
     {
-//        dd($areas);
-        $columns = array(
-
-//            array( 'db' => 'userName',          'dt' => 1 ),
-            array('db' => 'title', 'dt' => 2),
-            array('db' => 'categoryName', 'dt' => 3),
+        $user = User::find($id);
+        if ($user) {
+            $columns = array(
+                array('db' => 'title', 'dt' => 2),
+                array('db' => 'categoryName', 'dt' => 3),
 //            array( 'db' => 'description',   'dt' => 4 )
-        );
+            );
 
-        $draw = (int)$request->draw;
-        $start = (int)$request->start;
-        $length = (int)$request->length;
-        $order = $request->order[0]["column"];
-        $direction = $request->order[0]["dir"];
-        $search = trim($request->search["value"]);
+            $draw = (int)$request->draw;
+            $start = (int)$request->start;
+            $length = (int)$request->length;
+            $order = $request->order[0]["column"];
+            $direction = $request->order[0]["dir"];
+            $search = trim($request->search["value"]);
 
 
-        $value = array();
+            $value = array();
 
-        if (!empty($search)) {
-            $count = Post::search($search)
-                ->count();
-            $items = Post::search($search)
-                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
-                ->get();
-        } else {
-            $count = Post::count();
-            $items = Post::
-            limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
-                ->get();
-        }
-        foreach ($items as $index => $item) {
+            if (!empty($search)) {
+                $count = Post::search($search)
+                    ->count();
+                $items = Post::search($search)
+                    ->where(["first_user", $user->id])
+                    ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                    ->get();
+            } else {
+                $count = Post::count();
+
+                $items = Post::
+                limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                    ->where("first_user", $user->id)
+                    ->get();
+            }
+            foreach ($items as $index => $item) {
 //            dd($item->unPaidMaterials);
-            array_push($value, $item->Post_display_data);
+                array_push($value, $item->Post_display_data);
+            }
+            return [
+                "draw" => $draw,
+                "recordsTotal" => $count,
+                "recordsFiltered" => $count,
+                "data" => (array)$value,
+                "order" => $columns[$order]["db"]
+            ];
         }
-        return [
-            "draw" => $draw,
-            "recordsTotal" => $count,
-            "recordsFiltered" => $count,
-            "data" => (array)$value,
-            "order" => $columns[$order]["db"]
-        ];
+    }
+
+    public function indexRequests($id)
+    {
+        return view('userProfile.indexRequests', compact('id'));
+    }
+
+    public function getRequestsData(Request $request, $id)
+    {
+        $user = User::find($id);
+        if ($user) {
+            $columns = array(
+                array('db' => 'massage', 'dt' => 1),
+//                array('db' => 'categoryName', 'dt' => 3),
+            );
+
+            $draw = (int)$request->draw;
+            $start = (int)$request->start;
+            $length = (int)$request->length;
+            $order = $request->order[0]["column"];
+            $direction = $request->order[0]["dir"];
+            $search = trim($request->search["value"]);
+
+
+            $value = array();
+
+            if (!empty($search)) {
+                $count = Order::search($search)
+                    ->count();
+                $items = Order::search($search)
+                    ->where(["user_id", $user->id])
+                    ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                    ->get();
+            } else {
+                $count = Order::count();
+
+                $items = Order::
+                limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                    ->where("user_id", $user->id)
+                    ->get();
+            }
+            foreach ($items as $index => $item) {
+                array_push($value, $item->Post_display_data);
+            }
+            return [
+                "draw" => $draw,
+                "recordsTotal" => $count,
+                "recordsFiltered" => $count,
+                "data" => (array)$value,
+                "order" => $columns[$order]["db"]
+            ];
+        }
+//        dd($request->all());
+
 //        return $areas;
     }
 

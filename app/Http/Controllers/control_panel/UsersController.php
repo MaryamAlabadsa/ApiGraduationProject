@@ -50,12 +50,12 @@ class UsersController extends Controller
             $count = User::search($search)
                 ->count();
             $items = User::search($search)
-                ->limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+                ->limit($length)->offset($start)->orderBy('created_at', "desc")
                 ->get();
         } else {
             $count = User::count();
             $items = User::
-            limit($length)->offset($start)->orderBy($columns[$order]["db"], $direction)
+            limit($length)->offset($start)->orderBy('created_at', "desc")
                 ->get();
         }
         foreach ($items as $index => $item) {
@@ -202,11 +202,11 @@ class UsersController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \App\Models\User $user
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Illuminate\Routing\Redirector
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(User $user)
     {
-//        $user->delete();
-//        return redirect('/users')->with('success', 'You have successfully delete post.');
+        $user->delete();
+        return response()->json(['msg' => 'user data is deleted successfully', 'type' => 'success', 'title' => 'Delete']);
     }
 }

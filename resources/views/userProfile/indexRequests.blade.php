@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title')
-    <title>Posts - final project</title>
+    <title>Profile - final project</title>
 @endsection
 
 @section('style')
@@ -22,7 +22,7 @@
 @endsection
 
 @section('aside')
-    @include('post.aside')
+    @include('profile.asidePosts')
 @endsection
 
 @section('content')
@@ -36,60 +36,16 @@
                         </div>
                     </div>
                 </div>
-                <!-- Filter starts -->
-                <div class="users-list-filter px-2">
-                    <form>
-                        <div class="row border rounded py-2 mb-2 mx-n2">
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <label for="users-list-verified">category</label>
-                                <fieldset class="form-group">
-                                    <select onchange="filterByCategory()" id="posts-list-category"
-                                            class="form-control filter-category">
-                                        <option value="">Any</option>
-                                        <?php
-                                        $categories = \App\Models\Category::all();
-                                        ?>
-                                        @foreach($categories as $category)
-                                            <option value="{{$category->id}}">{{$category->name}}</option>
-                                        @endforeach
-                                    </select>
-                                </fieldset>
-                            </div>
-
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <label for="users-list-role">Status</label>
-                                <fieldset class="form-group">
-                                    <select onchange="filterByCategory()" id="posts-list-status"
-                                            class="form-control filter-category">
-                                        <option value="">Any</option>
-                                        <option value="1">closed</option>
-                                        <option value="0">Pending</option>
-                                    </select>
-                                </fieldset>
-                            </div>
-
-                            <div class="col-12 col-sm-6 col-lg-3">
-                                <label for="users-list-status">Donation</label>
-                                <fieldset class="form-group">
-                                    <select onchange="filterByCategory()" id="posts-list-donation"
-                                            class="form-control filter-category">
-                                        <option value="">Any</option>
-                                        <option value="1">donation</option>
-                                        <option value="0">beneficiary</option>
-                                    </select>
-                                </fieldset>
-                            </div>
-
-                            <div class="col-12 col-sm-6 col-lg-3 d-flex align-items-center">
-                                <button type="reset" onclick="filterClear()" class="btn btn-primary btn-block users-list-clear glow mb-0">
-                                    Clear
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                <div class="btn-group btn-group-toggle m-3" data-toggle="buttons">
+                    <label class="btn text-gradient-primary btn-outline-dark p-2">
+                        <input type="radio" name="options" id="option1" onclick="Profile() " autocomplete="off" > Posts
+                    </label>
+                    <label class="btn bg-gradient-primary active p-2">
+                        <input type="radio" name="options" id="option2"  autocomplete="off" checked> Requests
+                    </label>
                 </div>
-                <!-- Filter ends -->
                 <div class="card-body px-0 pb-2">
+
                     <div class="table-responsive p-3">
                         <table id="dataTable" class="table align-items-center justify-content-center mb-0">
                             <thead>
@@ -97,7 +53,15 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                     user
                                 </th>
-
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    massage
+                                </th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    send at
+                                </th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    post user
+                                </th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                     postTitle
                                 </th>
@@ -119,7 +83,7 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">
                                     actions
                                 </th>
-                                <th></th>
+{{--                                <th></th>--}}
                             </tr>
                             </thead>
                             <tbody>
@@ -135,23 +99,25 @@
 
 @section('script')
     <script src="{{ asset('control_panel_style/ajax/post.js') }}"></script>
-
     <script type="text/javascript">
-        var table = '';
         $(document).ready(function () {
-            table = $('#dataTable').DataTable({
+
+            var table = $('#dataTable').DataTable({
                 "processing": true,
                 "serverSide": true,
-                "ajax": "{{ route('posts.getData') }}",
+                "ajax": '{{ route('profile.getRequestsData',$id) }}',
                 "pagingType": "full_numbers",
                 "drawCallback": function (settings) {
                     $("[rel='tooltip']").tooltip();
                 },
                 "columnDefs": [
-                    {"sortable": true, "targets": [0, 4]}
+                    {"sortable": true, "targets": [0, 1]}
                 ],
                 "aoColumns": [
                     {"mData": "user"},
+                    {"mData": "massage"},
+                    {"mData": "sendAt"},
+                    {"mData": "postUser"},
                     {"mData": "title"},
                     {"mData": "categoryName"},
                     {"mData": "RequestNumber"},
@@ -163,17 +129,9 @@
                 responsive: true
             });
         });
-
-        function filterByCategory() {
-            var category = $('select[id="posts-list-category"]').val();
-            var status = $('select[id="posts-list-status"]').val();
-            var donation = $('select[id="posts-list-donation"]').val();
-            table.ajax.url('/getPostsData?category=' + category + '&status=' + status + '&donation=' + donation).load();
+        function Profile(){
+            window.location.href = "/profilePosts/{{$id}}";
         }
-        function filterClear() {
-            table.ajax.url('/getPostsData').load();
-        }
-
     </script>
 
 @endsection
