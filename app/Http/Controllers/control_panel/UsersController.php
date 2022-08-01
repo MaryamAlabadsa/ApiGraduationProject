@@ -4,6 +4,7 @@ namespace App\Http\Controllers\control_panel;
 
 use App\Http\Controllers\Api\Profile\ProfileController;
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use App\Models\Order;
 use App\Models\Post;
 use App\Models\User;
@@ -23,17 +24,21 @@ class UsersController extends Controller
      */
     public function index()
     {
-            $users = User::all();
+        $users = User::all();
+        return view('users.index');
+    }
 
-            return view('users.index');
-      }
     public function getData(Request $request)
     {
 //        dd('$areas');
         $columns = array(
-
+            array('db' => 'id', 'dt' => 0),
             array('db' => 'email', 'dt' => 2),
-            array( 'db' => 'id',   'dt' => 0 )
+            array('db' => 'phoneNumber', 'dt' => 3),
+            array('db' => 'address', 'dt' => 4),
+            array('db' => 'num_donation_posts', 'dt' => 5),
+            array('db' => 'num_request_posts', 'dt' => 6),
+            array('db' => 'created_at', 'dt' => 7),
         );
 
         $draw = (int)$request->draw;
@@ -73,19 +78,15 @@ class UsersController extends Controller
     }
 
 
-
     public function showUserProfileCard(Request $request)
     {
-        $userId=$request->id;
+        $userId = $request->id;
         $user = User::where('id', $userId)->first();
-        $num_donation_posts= count($this->DonationPosts($userId));
-        $num_request_posts= count($this->RequestPosts($userId));
+        $num_donation_posts = count($this->DonationPosts($userId));
+        $num_request_posts = count($this->RequestPosts($userId));
 
-        return response()->json(['view' => view('profile.userProfileCard', compact('user', 'num_donation_posts','num_request_posts'))->render(), 'User_id' =>$userId]);
+        return response()->json(['view' => view('profile.userProfileCard', compact('user', 'num_donation_posts', 'num_request_posts'))->render(), 'User_id' => $userId]);
     }
-
-
-
 
 
     public function RequestPosts($userId)
@@ -118,15 +119,6 @@ class UsersController extends Controller
         }
         return $data;
     }
-
-
-
-
-
-
-
-
-
 
     /**
      * Show the form for creating a new resource.
@@ -206,7 +198,38 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
+        Notification::where('sender_id', $user->id)->delete();
+        $posts=Post::where('first_user', $user->id)->get();
+        foreach ($posts as $post){
+            $orders = getPostOrders($post->id);
+//            dd($orders);
+            foreach ($orders as $order) {
+                dd($orders);
+                $user_order = \App\Models\User::where('id', $order->user_id)->first();
+                $token = $user_order->fcm_token;
+                if ($token) {
+                    sendnotification($token, "delete Post", $post->first_user_name . ' his post was deleted', ['post_id' => $post->id]);
+                }
+                $notification = Notification::where([['post_id', '=', $post->id], ["deleted_at", '!=', null], ['type', '=', 'delete_Post'],
+                    ['receiver_id', '=', $user_order->id]])->first();
+                if ($notification) {
+                    $notification->restore();
+                } else
+                    Notification::create([
+                        'post_id' => $post->id,
+                        'sender_id' => $post->first_user,
+                        'receiver_id' => $user_order->id,
+                        'type' => 'delete_post',
+                    ]);
+                $order->delete();
+            }
+            $post->delete();
+        }
+
+        Order::where('user_id', $user->id)->delete();
         $user->delete();
+
+
         return response()->json(['msg' => 'user data is deleted successfully', 'type' => 'success', 'title' => 'Delete']);
     }
 }

@@ -4,9 +4,11 @@ namespace App\Http\Controllers\control_panel;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Notification;
 use App\Models\Order;
 use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -26,11 +28,10 @@ class PostController extends Controller
     {
 //        dd($request->all());
         $columns = array(
-
-//            array( 'db' => 'userName',          'dt' => 1 ),
-            array('db' => 'title', 'dt' => 2),
-            array('db' => 'categoryName', 'dt' => 3),
-//            array( 'db' => 'description',   'dt' => 4 )
+            array('db' => 'title', 'dt' => 1),
+            array('db' => 'categoryName', 'dt' => 2),
+            array('db' => 'RequestNumber', 'dt' => 4),
+            array('db' => 'isDonation', 'dt' => 5)
         );
 
         $draw = (int)$request->draw;
@@ -165,7 +166,39 @@ class PostController extends Controller
      */
     public function destroy(Post $Post)
     {
+        $token = User::where('id', $Post->first_user)->first()->fcm_token;
+        if ($token) {
+            sendnotification($token, "delete Post ", $Post->first_user_name . ' we delete your post because we saw something wrong', ['user_id' => $Post->first_user]);
+        }
+        Notification::create([
+            'post_id' => $Post->id,
+            'sender_id' => adminId(),
+            'receiver_id' => $Post->first_user,
+            'type' => 'delete_post_admin',
+        ]);
+        $orders = getPostOrders($Post->id);
+        foreach ($orders as $order) {
+            $order->delete();
+            $user_order = \App\Models\User::where('id', $order->user_id)->first();
+            $token = $user_order->fcm_token;
+//            dd($token);
+            if ($token) {
+                sendnotification($token, "delete Post", $Post->first_user_name . ' his post was deleted', ['post_id' => $Post->id]);
+            }
+            $notification = Notification::where([['post_id', '=', $Post->id], ["deleted_at", '!=', null], ['type', '=', 'delete_Post'],
+                ['receiver_id', '=', $user_order->id]])->first();
+            if ($notification) {
+                $notification->restore();
+            } else
+                Notification::create([
+                    'post_id' => $Post->id,
+                    'sender_id' => $Post->first_user,
+                    'receiver_id' => $user_order->id,
+                    'type' => 'delete_post',
+                ]);
+        }
         $Post->delete();
+
         return response()->json(['msg' => 'a Post data is deleted successfully', 'type' => 'success', 'title' => 'Delete']);
 
     }

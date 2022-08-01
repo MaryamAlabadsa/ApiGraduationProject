@@ -75,7 +75,7 @@ class Post extends Model
             'postedAt' => $this->published_at,
             'isDonation' => $this->show_is_donation_post,
             'isAvailable' => $this->show_is_complete,
-            'tools' => $this->show_post_images . '&nbsp' . $this->show_orders
+            'tools' => $this->show_post_images . '&nbsp' . $this->show_orders.'&nbsp' . $this->delete_post
 
         ];
     }
@@ -108,12 +108,15 @@ class Post extends Model
 
     public function getShowPostImagesAttribute()
     {
+        if ($this->post_media[0]==''){
+            return '<button type="button"class="btn bg-gradient-warning w-40 mb-0 toast-btn disabled" data-toggle="tooltip" data-placement="top" rel="tooltip" title="showImages ' . count($this->post_media) . '" onclick="showImages(\'' . route('posts.showImages', $this->id) . '\',this)"><i class="bi bi-images"></i>post images</button>';
+        }
         return '<button type="button"class="btn bg-gradient-warning w-40 mb-0 toast-btn" data-toggle="tooltip" data-placement="top" rel="tooltip" title="showImages ' . count($this->post_media) . '" onclick="showImages(\'' . route('posts.showImages', $this->id) . '\',this)"><i class="bi bi-images"></i>post images</button>';
     }
 
     public function getShowUserImageNameAttribute()
     {
-        //       return '<div class=" btn d-flex px-2" id="img-clck">
+
 
         return '<button class=" btn d-flex px-2" onclick="ShowProfileCard(\'' . route('posts.ShowProfileCard', $this->first_user) . '\')">
                                   <div>
@@ -277,7 +280,7 @@ class Post extends Model
     public function getFirstUserImageLinkAttribute()
     {
         return $this->user ? ($this->user->img ? url('/storage/' . $this->user->img) :
-            url("/control_panel_style/images/faces/profile/profile.jpg")) : "/control_panel_style/images/faces/profile/profile.jpg";
+            url("/control_panel_style/usericon.png")) : "/control_panel_style/usericon.png";
     }
 
     public function getSecondUserImageLinkAttribute()
@@ -303,7 +306,7 @@ class Post extends Model
                 array_push($media, url('/storage/' . $medium->name));
             }
         } else {
-            array_push($media, url('/control_panel_style/images/faces/profile/profile.jpg'));
+            array_push($media, '');
         }
         return $media;
     }

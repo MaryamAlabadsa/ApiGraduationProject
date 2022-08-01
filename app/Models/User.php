@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use http\Url;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -13,7 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable implements MustVerifyEmail
 {
 //    protected $appends=['image_link'];
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens,SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -109,11 +110,12 @@ class User extends Authenticatable implements MustVerifyEmail
     }
     public function getDeleteUserAttribute()
     {
-        if ($this->second_user == null) {
+        if ($this->id != 1) {
             return '<button  type="button" class="btn bg-gradient-faded-danger w-40 mb-0 toast-btn " data-toggle="tooltip"
              data-placement="top" rel="tooltip" title="Delete '.$this->name.'" onclick="deleteItem(\''.route('users.destroy',$this->id).'\')"><i class="fa fa-trash"></i></button>';
 
-        }  }
+        }
+    }
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -143,7 +145,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getImageLinkAttribute()
     {
-        return $this->img ? url('/storage/' . $this->img) : url("/control_panel_style/images/faces/profile/profile.jpg");
+        return $this->img ? url('/storage/' . $this->img) : url("/control_panel_style/usericon.png");
     }
 
     //one user has many notifications

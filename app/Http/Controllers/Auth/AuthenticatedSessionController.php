@@ -37,6 +37,7 @@ class AuthenticatedSessionController extends Controller
             $request->session()->regenerate();
             return redirect()->intended(RouteServiceProvider::HOME);
         } else {
+
 //            Alert::error('Error Title', 'Error Message');
             return redirect('/')->with('error', 'you are not admin');
         }

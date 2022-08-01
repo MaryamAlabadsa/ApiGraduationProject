@@ -180,4 +180,11 @@ class AuthController extends Controller
         );
     }
 
+    public function restoreUser($id)
+    {
+        $deleteUser = User::onlyTrashed()->where([["deleted_at", '!=', null], ['id', '=', $id]])->first();
+        if ($deleteUser)
+            $deleteUser->restore();
+
+    }
 }

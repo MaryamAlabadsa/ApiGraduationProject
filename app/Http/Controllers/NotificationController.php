@@ -20,9 +20,11 @@ class NotificationController extends Controller
     {
         $user = Auth::id();
 
-        $notif = Notification::selectRaw('post_id,created_at,id,sender_id,type,receiver_id,updated_at')
-            ->where('receiver_id', $user)
-            ->groupBy('post_id', 'created_at', 'id', 'sender_id', 'type', 'receiver_id','updated_at')
+        $notif = Notification::
+//        selectRaw('post_id,created_at,id,sender_id,type,receiver_id,updated_at')
+//            ->
+        where('receiver_id', $user)
+//            ->groupBy('post_id', 'created_at', 'id', 'sender_id', 'type', 'receiver_id','updated_at')
             ->orderByDesc('updated_at')
             ->get();
 

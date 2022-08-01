@@ -30,13 +30,13 @@ function sendnotification($to, $title, $message, $datapayload = [])
 
 function adminToken()
 {
-    $adminToken = \App\Models\User::where('id', 32)->first()->fcm_token;
+    $adminToken = \App\Models\User::where('id', 1)->first()->fcm_token;
     return $adminToken;
 }
 
 function adminId()
 {
-    return 32;
+    return 1;
 }
 
 function RequestPosts($userId)
@@ -72,6 +72,7 @@ function DonationPosts($userId)
 
 function getPostOrders($post_id)
 {
+//    dd($post_id);
     $post = Post::where('id', $post_id)->first();
     $orders = Order::where('post_id', $post->id)->get();
     return $orders;

@@ -65,6 +65,7 @@ Route::post('storeNotification', [\App\Http\Controllers\NotificationController::
 
 Route::get('getAllMedias', [\App\Http\Controllers\Api\Media\MediaController::class, 'getAllMedias']);
 
+Route::post('restoreUser/{id}', [AuthController::class, 'restoreUser']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 
